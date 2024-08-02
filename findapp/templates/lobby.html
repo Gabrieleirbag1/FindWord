@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>My Web Page</title>
+</head>
+<body>
+    <h1>Lobby</h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="player1">Player:</label>
+        <button type="submit" name="player1" value="Ropied">Start Game</button>
+    </form>  
+
+    {% comment %} <script src="script.js"></script> {% endcomment %}
+</body>
+</html>
