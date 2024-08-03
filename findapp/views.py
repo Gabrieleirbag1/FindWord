@@ -2,23 +2,44 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from . import models
+from . import forms
 import csv, random, os
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+import string
+import random
 
-class Game(View):
+class GameView(View):
     def __init__(self) -> None:
         self.words = self.open_csv()
         pass
 
-    def get(self, request, id):
+    def get(self, request, room_name):
         word = request.session.pop('word', None)
-        game_instance = get_object_or_404(models.GameModel, id=id)
-        return render(request, 'game.html', {'word': word})
+        context = {
+            'room_name': room_name,
+            'word': word
+        }
+        if not self.check_room_exists(room_name):
+            request.session['error'] = 'Game does not exist'
+            return redirect('lobby')
+        
+        if self.update_name_player(room_name, request.user.username):
+            if self.check_name_player(room_name, request.user.username):
+                return render(request, 'room.html', context)
+            else:
+                request.session['error'] = 'You\'re not allowed to join this game'
+                return redirect('lobby')
+        else:
+            request.session['error'] = 'You\'re not allowed to join this game'
+            return redirect('lobby')
 
-    def post(self, request, id):
+
+    def post(self, request, room_name):
         word = self.findword()
         request.session['word'] = word
-        return redirect('game', id=id)
-    
+        return redirect('room', room_name=room_name)
+
     def open_csv(self):
         csv_path = "dictionary/fr/noun.csv"
         full_path = os.path.join(os.path.dirname(__file__), csv_path)
@@ -32,16 +53,119 @@ class Game(View):
         word = random.choice(self.words)[0]
         print(word)
         return word
-
-class Lobby(View):
+    
+    def check_room_exists(self, room_name):
+        return models.GameModel.objects.filter(room_name=room_name).exists()
+    
+    def update_name_player(self, room_name, username):
+        game = models.GameModel.objects.filter(room_name=room_name).first()
+        if game.player1 is None:
+            game.player1 = username
+            game.save()
+            return True
+        elif game.player2 is None:
+            if not game.player1 == username:
+                game.player2 = username
+                game.save()
+                return True
+            else:
+                return False
+        else:
+            return True
+        
+    def check_name_player(self, room_name, username):
+        game = models.GameModel.objects.filter(room_name=room_name).first()
+        print(game.player1, game.player2)
+        if game.player1 == username or game.player2 == username:
+            return True
+        return False
+    
+class LobbyView(View):
     def get(self, request):
-        return render(request, 'lobby.html')
+        error = request.session.pop('error', None)
+        return render(request, 'lobby.html', {'error': error})
     
     def post(self, request):
-        player1 = request.POST.get('player1') or ''
-        player2 = request.POST.get('player2') or ''
-        word = request.POST.get('word') or ''
+        action = request.POST.get('action')
+        if action == 'CREATE':
+            player1 = None
+            player2 = None
+            word = request.POST.get('word') or ''
+            room_name = self.generate_random_url(10)
+            while self.check_room_exists(room_name):
+                room_name = self.generate_random_url(10)
+            game = models.GameModel.objects.create(player1=player1, player2=player2, word=word, room_name=room_name)
+            if game:
+                return redirect('room', room_name=room_name)
+            else:
+                request.session['error'] = 'Error creating game'
+                return redirect('lobby')
+        else:
+            room_name = request.POST.get('room_name')
+            try:
+                room_name = room_name.split('room/')[1].strip("/")
+            except IndexError:
+                pass
+            game = models.GameModel.objects.filter(room_name=room_name).first()
+            if game:
+                return redirect('room', room_name=room_name)
+            else:
+                request.session['error'] = 'Error joining room'
+                return redirect('lobby')
+    
+    def generate_random_url(self, length):
+        characters = string.ascii_letters + string.digits + '-_'
+        url = ''.join(random.choice(characters) for _ in range(length))
+        return url
+    
+    def check_room_exists(self, room_name):
+        return models.GameModel.objects.filter(room_name=room_name).exists()
+    
+class RegisterView(View):
+    def get(self, request):
+        error = request.session.pop('error', None)
+        return render(request, 'register.html', {'error': error})
+    
+    def post(self, request):
+        if request.method == 'POST':
+            username = request.POST['username']
+            password = request.POST['password']
+            confirm_password = request.POST['confirm_password']
 
-        game = models.GameModel.objects.create(player1=player1, player2=player2, word=word)
+            if password == confirm_password:
+                if User.objects.filter(username=username).exists():
+                    request.session['error'] = 'Username already exists'
+                    return redirect('register')
+                else:
+                    user = User.objects.create_user(username=username, password=password)
+                    user.save()
+                    return redirect('login')
+            else:
+                request.session['error'] = 'Passwords do not match'
+                return redirect('register')
+        else:
+            request.session['error'] = 'Invalid request'
+            return redirect('register')
+    
+class LoginView(View):
+    def get(self, request):
+        error = request.session.pop('error', None)
+        return render(request, 'login.html', {'error': error})
 
-        return redirect('game', id=game.id)
+    def post(self, request):
+        if request.method == 'POST':
+            username = request.POST['username']
+            password = request.POST['password']
+
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('lobby')
+            else:
+                request.session['error'] = 'Invalid credentials'
+                return redirect('login')
+            
+def logout_user(request):
+    logout(request)
+    return redirect('lobby')

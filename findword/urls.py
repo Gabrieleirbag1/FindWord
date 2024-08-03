@@ -19,7 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('findapp/', include('findapp.urls')),
-    path('', include('findapp.urls')),
-
+    path('findword/', include('findapp.urls')),
 ]
