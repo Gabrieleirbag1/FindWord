@@ -8,16 +8,15 @@
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
+    <input id="ready-button" type="button" value='notready'>
     {{ room_name|json_script:"room-name" }}
 
     {% if word %}
     <p>{{ word }}</p>
     {% endif %}
-    <br>    
-    <br>
-    <form action="" method="post">
+
+    <form action="" method="post" id="find-word-form">
         {% csrf_token %}
-        <button> FIND A WORD </button>
     </form> 
 
     <script>
@@ -34,6 +33,19 @@
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             document.querySelector('#chat-log').value += (data.message + '\n');
+
+            if (data.message === 'start') {
+            document.getElementById('find-word-form').submit();
+            }
+
+            if (data.message === 'ready_state') {
+            const button = document.querySelector('#ready-button');
+            if (data.state === 'notready') {
+                button.value = 'ready';
+            } else {
+                button.value = 'notready';
+            }
+            }
         };
 
         chatSocket.onclose = function(e) {
@@ -64,6 +76,22 @@
             }));
             messageInputDom.value = '';
         };
+
+        // Gestionnaire d'événement pour le bouton "Ready"
+        document.querySelector('#ready-button').onclick = function(e) {
+            const button = e.target;
+            const state = button.value === 'notready' ? 'notready' : 'ready';
+            chatSocket.send(JSON.stringify({
+                'message': 'notready',
+                'state': state
+            }));
+            button.value = state === 'notready' ? 'ready' : 'notready';
+        };
+
+        // Gestionnaire d'événement beforeunload pour gérer la déconnexion propre
+        window.addEventListener('beforeunload', function(event) {
+            chatSocket.send(JSON.stringify({ 'message': 'disconnect' }));
+        });
     </script>
 </body>
 </html>

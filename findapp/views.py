@@ -15,10 +15,11 @@ class GameView(View):
         pass
 
     def get(self, request, room_name):
-        word = request.session.pop('word', None)
+        game = models.GameModel.objects.filter(room_name=room_name).first()
+        word = game.word
         context = {
             'room_name': room_name,
-            'word': word
+            'word': word,
         }
         if not self.check_room_exists(room_name):
             request.session['error'] = 'Game does not exist'
@@ -34,10 +35,11 @@ class GameView(View):
             request.session['error'] = 'You\'re not allowed to join this game'
             return redirect('lobby')
 
-
     def post(self, request, room_name):
         word = self.findword()
-        request.session['word'] = word
+        game = models.GameModel.objects.filter(room_name=room_name).first()
+        game.word = word
+        game.save()
         return redirect('room', room_name=room_name)
 
     def open_csv(self):
@@ -75,7 +77,6 @@ class GameView(View):
         
     def check_name_player(self, room_name, username):
         game = models.GameModel.objects.filter(room_name=room_name).first()
-        print(game.player1, game.player2)
         if game.player1 == username or game.player2 == username:
             return True
         return False

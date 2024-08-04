@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    {% load static %}
-    <title>My Web Page</title>
-</head>
+{% extends 'base.html' %}
+
+{% block title %}Lobby{% endblock %}
+
+{% block content %}
 <body>
     <h1>Lobby</h1>
 
@@ -34,5 +33,7 @@
         <p style="color: red;">{{ error }}</p>
     {% endif %}
 </body>
+{% endblock %}
+
 </body>
 </html>
