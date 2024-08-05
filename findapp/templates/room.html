@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
-</head>
+{% extends 'base.html' %}
+
+{% block title %}Lobby{% endblock %}
+
+{% block content %}
+<body>
 <body>
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
@@ -15,9 +15,28 @@
     <p>{{ word }}</p>
     {% endif %}
 
-    <form action="" method="post" id="find-word-form">
+    {% if player1 %}
+    <p id="player1">{{player1}}</p>
+    {% else %}
+    <p id="player1"></p>
+    {% endif %}
+
+    {% if player2 %}
+    <p id="player2">{{player2}}</p>
+    {% else %}
+    <p id="player2"></p>
+    {% endif %}
+
+    <form action="" name="action" method="post" id="find-word-form">
         {% csrf_token %}
-    </form> 
+        {% if not in_game_state%}
+        <input type="hidden" name="action" value="FINDWORD">
+        <input type="text" disabled>
+        {% else %}
+        <input type="hidden" name="action" value="RESULTS">
+        <input type="text" name="input_text" >
+        {% endif %}
+    </form>
 
     <script>
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
@@ -32,19 +51,34 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            console.log(data);
             document.querySelector('#chat-log').value += (data.message + '\n');
-
+            
             if (data.message === 'start') {
-            document.getElementById('find-word-form').submit();
+                document.getElementById('find-word-form').submit();
             }
+
 
             if (data.message === 'ready_state') {
-            const button = document.querySelector('#ready-button');
-            if (data.state === 'notready') {
-                button.value = 'ready';
-            } else {
-                button.value = 'notready';
+                const button = document.querySelector('#ready-button');
+                if (data.state === 'notready') {
+                    button.value = 'ready';
+                } else {
+                    button.value = 'notready';
+                }
             }
+
+            if (data.message === 'username') {
+                const username = document.getElementById('username').textContent.trim();
+                const player1_name = document.getElementById('player1').textContent.trim();
+                const player2_name = document.getElementById('player2').textContent.trim();
+                if (username !== data.user) {
+                    if (player1_name === '') {
+                        document.getElementById('player1').textContent = data.user;
+                    } else if (player2_name === '') {
+                        document.getElementById('player2').textContent = data.user;
+                    }
+                }
             }
         };
 
@@ -82,7 +116,7 @@
             const button = e.target;
             const state = button.value === 'notready' ? 'notready' : 'ready';
             chatSocket.send(JSON.stringify({
-                'message': 'notready',
+                'message': 'ready_state',
                 'state': state
             }));
             button.value = state === 'notready' ? 'ready' : 'notready';
@@ -92,6 +126,14 @@
         window.addEventListener('beforeunload', function(event) {
             chatSocket.send(JSON.stringify({ 'message': 'disconnect' }));
         });
+
+        // when page loads send a message to the server
+        chatSocket.onopen = function(e) {
+            username = document.getElementById('username').textContent;
+            chatSocket.send(JSON.stringify({ 
+                'message': 'connect',
+                'user': username
+            }));
+        };
     </script>
-</body>
-</html>
+{% endblock %}

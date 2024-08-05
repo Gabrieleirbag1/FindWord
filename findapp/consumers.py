@@ -5,6 +5,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     rooms = {}
     user_connections = {}
     ready_states = {}
+    socket_connections = []
 
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -36,9 +37,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     self.channel_name
                 )
                 await self.accept()
+                self.socket_connections.append(self)
                 await self.send_ready_state()
 
     async def disconnect(self, close_code):
+        try:
+            self.socket_connections.remove(self)
+        except ValueError:
+            print("User not in socket connections")
+            
         if self.room_name in ChatConsumer.rooms:
             ChatConsumer.rooms[self.room_name] -= 1
             if ChatConsumer.rooms[self.room_name] <= 0:
@@ -60,13 +67,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        print(f"User {self.user_id} sent message: {text_data_json}")
         message = text_data_json['message']
         if message == "disconnect":
             ChatConsumer.user_connections[self.room_name].discard(self.user_id)
             await self.close()
             return
         
-        if message == "notready":
+        if message == "ready_state":
             state = await self.str_bool_convert(text_data_json['state'])
             ChatConsumer.ready_states[self.room_name][self.user_id] = state
             print(f"User {self.user_id} is ready: {state}")
@@ -79,6 +87,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'message': "start"
                         }
                     )
+            return
+
+        if message == "connect":
+            user = text_data_json['user']
+            print('new user:', user)
+            await self.send_to_all({
+                'message': "username",
+                'user': user
+            })
             return
 
         await self.channel_layer.group_send(
@@ -111,3 +128,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': "ready_state",
             'state': "notready" if state else "ready"
         }))
+
+    async def send_to_all(self, message):
+        for connection in self.socket_connections:
+            await connection.send(text_data=json.dumps(message))

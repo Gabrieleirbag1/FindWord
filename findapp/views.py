@@ -15,17 +15,19 @@ class GameView(View):
         pass
 
     def get(self, request, room_name):
-        game = models.GameModel.objects.filter(room_name=room_name).first()
-        word = game.word
-        context = {
-            'room_name': room_name,
-            'word': word,
-        }
         if not self.check_room_exists(room_name):
             request.session['error'] = 'Game does not exist'
             return redirect('lobby')
         
         if self.update_name_player(room_name, request.user.username):
+            game = models.GameModel.objects.filter(room_name=room_name).first()
+            context = {
+            'room_name': room_name,
+            'word': game.word,
+            'in_game_state': game.in_game_state,
+            'player1': game.player1,
+            'player2': game.player2,
+            }
             if self.check_name_player(room_name, request.user.username):
                 return render(request, 'room.html', context)
             else:
@@ -36,11 +38,20 @@ class GameView(View):
             return redirect('lobby')
 
     def post(self, request, room_name):
-        word = self.findword()
+        action = request.POST.get('action')
         game = models.GameModel.objects.filter(room_name=room_name).first()
-        game.word = word
+        
+        if action == "FINDWORD":
+            word = self.findword()
+            game.word = word
+            game.in_game_state = True
+
+        elif action == "RESULTS":
+            game.in_game_state = False
+
         game.save()
         return redirect('room', room_name=room_name)
+
 
     def open_csv(self):
         csv_path = "dictionary/fr/noun.csv"
@@ -115,7 +126,7 @@ class LobbyView(View):
                 return redirect('lobby')
     
     def generate_random_url(self, length):
-        characters = string.ascii_letters + string.digits + '-_'
+        characters = string.ascii_letters + string.digits + '_'
         url = ''.join(random.choice(characters) for _ in range(length))
         return url
     
