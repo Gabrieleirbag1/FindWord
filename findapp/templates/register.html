@@ -8,7 +8,7 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label for="username">Username:</label>
-        <input type="text" name="username" id="username" required><br>        
+        <input type="text" name="username" id="username" ="input_text" oninput="filterInput(this)" required><br>        
 
         <label for="password">Password:</label>
         <input type="password" name="password" required><br>
@@ -24,8 +24,12 @@
 
     <script>
         document.getElementById('username').addEventListener('input', function (e) {
-            e.target.value = e.target.value.replace(/\s+/g, '');
+            e.target.value = e.target.value.replace(/[^\w\s]/g, '');
         });
+        function filterInput(input) {
+            const regex = /[^a-zA-Z0-9]/g;
+            input.value = input.value.replace(regex, '');
+        }
     </script>
 </body>
 </html>

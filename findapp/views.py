@@ -27,6 +27,9 @@ class GameView(View):
             'in_game_state': game.in_game_state,
             'player1': game.player1,
             'player2': game.player2,
+            'player1_text': game.player1_text,
+            'player2_text': game.player2_text,
+            'note': game.note,
             }
             if self.check_name_player(room_name, request.user.username):
                 return render(request, 'room.html', context)
@@ -46,8 +49,33 @@ class GameView(View):
             game.word = word
             game.in_game_state = True
 
+            note = request.POST.get('rating-input')
+            if game.player1 == request.user.username and note:
+                game.player1_note = int(note)
+            elif game.player2 == request.user.username and note:
+                game.player2_note = int(note)
+
+            try:
+                note = (game.player1_note + game.player2_note) // 2
+            except TypeError:
+                note = None
+
+            if game.note:
+                print("my new friends !")
+                
+            game.note = note
+
+            print("note", note, request.user.username)
+
         elif action == "RESULTS":
             game.in_game_state = False
+            username = request.user.username
+            input_text = request.POST.get('input-text')
+            if game.player1 == username:
+                game.player1_text = input_text
+            else:
+                game.player2_text = input_text
+            print("input_text", input_text)
 
         game.save()
         return redirect('room', room_name=room_name)

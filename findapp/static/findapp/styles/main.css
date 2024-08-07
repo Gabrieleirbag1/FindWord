@@ -1,0 +1,74 @@
+/* Group divs */
+.infos-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 3% 0;
+}
+
+.infos-group div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.interaction-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 3% 0;
+}
+
+/* Other */
+
+#find-word-form {
+    width: 100%;
+}
+
+/* Ready container */
+.ready-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Text container */
+.text-container {
+    max-width: 70%;
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.text-input {
+    width: 100%;
+    font-size: 5em;
+}
+
+/* Rating container */
+.rating-container {
+    max-width: 60%;
+    margin: 20px auto;
+}
+
+.rating-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 15px;
+    background: linear-gradient(to right, green, yellowgreen, yellow, orange, red);
+    outline: none;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+.rating-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 3px;
+    height: 20px;
+    background: #808ab5;
+    cursor: pointer;
+}
+

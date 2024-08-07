@@ -1,139 +1,85 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}Lobby{% endblock %}
 
 {% block content %}
-<body>
-<body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    <input id="ready-button" type="button" value='notready'>
     {{ room_name|json_script:"room-name" }}
 
-    {% if word %}
-    <p>{{ word }}</p>
-    {% endif %}
+    <div class="infos-group">
+        <div class="player1">
+            <p> Player 1 </p>
+            {% if player1 %}
+            <p id="player1">{{player1}}</p>
+            {% else %}
+            <p id="player1"></p>
+            {% endif %}
+            {% if not in_game_state%}
+            <p id="player1_text">{{player1_text}}</p>
+            {% endif %}
+        </div>
 
-    {% if player1 %}
-    <p id="player1">{{player1}}</p>
-    {% else %}
-    <p id="player1"></p>
-    {% endif %}
+        <div class="ingame-infos-group">
+            <div class="note">
+                <p> Note :</p>
+                {% if note %}
+                <p>{{ note}}</p>
+                {% endif %}
+            </div>
 
-    {% if player2 %}
-    <p id="player2">{{player2}}</p>
-    {% else %}
-    <p id="player2"></p>
-    {% endif %}
+            <div class="word">
+                {% if word %}
+                <p>{{ word }}</p>
+                {% endif %}
+            </div>
+        </div>
 
-    <form action="" name="action" method="post" id="find-word-form">
-        {% csrf_token %}
-        {% if not in_game_state%}
-        <input type="hidden" name="action" value="FINDWORD">
-        <input type="text" disabled>
-        {% else %}
-        <input type="hidden" name="action" value="RESULTS">
-        <input type="text" name="input_text" >
-        {% endif %}
-    </form>
+        <div class="player2">
+            <p> Player 2 </p>
+            {% if player2 %}
+            <p id="player2">{{player2}}</p>
+            {% else %}
+            <p id="player2"></p>
+            {% endif %}
+            {% if not in_game_state%}
+            <p id="player2_text">{{player2_text}}</p>
+            {% endif %}
+        </div>
+    </div>
 
-    <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    <div class="interaction-group">
+        <form action="" name="action" method="post" id="find-word-form">
+            {% csrf_token %}
+            {% if not in_game_state%}
+                <div class="text-container">
+                    <input type="hidden" name="action" value="FINDWORD">
+                    <input type="text" class="text-input" disabled>
+                </div>
 
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/findword/room/'
-            + roomName
-            + '/'
-        );
+                <div class="rating-container">
+                {% if note %}
+                    <input type="range" name="rating-input" min="1" max="5" value="3" class="rating-slider" id="rating-slider">
+                {% else %}
+                    <input type="range" name="rating-input" min="1" max="5" value="3" class="rating-slider" id="rating-slider" disabled>
+                {% endif %}
+                </div>
+            {% else %}
+                <div class="text-container">
+                    <input type="hidden" name="action" value="RESULTS">
+                    <input type="text" class="text-input" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)">
+                </div>
 
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            console.log(data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-            
-            if (data.message === 'start') {
-                document.getElementById('find-word-form').submit();
-            }
+                <div class="rating-container">
+                    <input type="range" name="rating-input" min="1" max="5" value="3" class="rating-slider" id="rating-slider" disabled>
+                </div>
+            {% endif %}
+        </form>
 
+        <div class="ready-container">
+            <input id="ready-button" type="button" value='notready'>
+        </div>
+    </div>
 
-            if (data.message === 'ready_state') {
-                const button = document.querySelector('#ready-button');
-                if (data.state === 'notready') {
-                    button.value = 'ready';
-                } else {
-                    button.value = 'notready';
-                }
-            }
-
-            if (data.message === 'username') {
-                const username = document.getElementById('username').textContent.trim();
-                const player1_name = document.getElementById('player1').textContent.trim();
-                const player2_name = document.getElementById('player2').textContent.trim();
-                if (username !== data.user) {
-                    if (player1_name === '') {
-                        document.getElementById('player1').textContent = data.user;
-                    } else if (player2_name === '') {
-                        document.getElementById('player2').textContent = data.user;
-                    }
-                }
-            }
-        };
-
-        chatSocket.onclose = function(e) {
-            if (e.code === 4000) {
-                window.location.href = '/findword/lobby/';
-                window.alert('Room is full. Redirecting to lobby...');
-            } else if (e.code === 4001) {
-                window.location.href = '/findword/lobby/';
-                window.alert('You are already in the room. Redirecting to lobby...');
-            } else {
-                console.error('Chat socket closed unexpectedly');
-                window.reload();
-            }
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
-
-        // Gestionnaire d'événement pour le bouton "Ready"
-        document.querySelector('#ready-button').onclick = function(e) {
-            const button = e.target;
-            const state = button.value === 'notready' ? 'notready' : 'ready';
-            chatSocket.send(JSON.stringify({
-                'message': 'ready_state',
-                'state': state
-            }));
-            button.value = state === 'notready' ? 'ready' : 'notready';
-        };
-
-        // Gestionnaire d'événement beforeunload pour gérer la déconnexion propre
-        window.addEventListener('beforeunload', function(event) {
-            chatSocket.send(JSON.stringify({ 'message': 'disconnect' }));
-        });
-
-        // when page loads send a message to the server
-        chatSocket.onopen = function(e) {
-            username = document.getElementById('username').textContent;
-            chatSocket.send(JSON.stringify({ 
-                'message': 'connect',
-                'user': username
-            }));
-        };
-    </script>
+    <script src="{% static 'findapp/scripts/room.js' %}"></script>
 {% endblock %}
