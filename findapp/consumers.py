@@ -1,5 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
+from asgiref.sync import sync_to_async
+from .models import GameModel
 
 class ChatConsumer(AsyncWebsocketConsumer):
     rooms = {}
@@ -77,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if message == "ready_state":
             state = await self.str_bool_convert(text_data_json['state'])
             ChatConsumer.ready_states[self.room_name][self.user_id] = state
-            print(f"User {self.user_id} is ready: {state}")
+            print(f"User {self.user_id} is ready")
             if len(ChatConsumer.ready_states[self.room_name]) == 2:
                 if all(ChatConsumer.ready_states[self.room_name].values()):
                     await self.channel_layer.group_send(
@@ -91,12 +93,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if message == "connect":
             user = text_data_json['user']
-            print('new user:', user)
+            print('new user:', user, 'in room', self.room_name)
             await self.send_to_all({
                 'message': "username",
                 'user': user
             })
             return
+        
+        if message == "rate":
+            note = text_data_json['note']
+            user = text_data_json['user']            
+            # Utiliser sync_to_async pour exécuter les opérations de base de données
+            game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
+            
+            if game:
+                if game.player1 == user:
+                    game.player1_note = int(note)
+                elif game.player2 == user:
+                    game.player2_note = int(note)
+                # Sauvegarder le jeu de manière synchrone
+                await sync_to_async(game.save)()
+            return
+            
 
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -119,7 +137,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return False
     
     async def send_ready_state(self):
-        print(f"User {self.user_id} is ready: {ChatConsumer.ready_states[self.room_name]}")
+        print(f"User {self.user_id} is ready")
         try:
             state = ChatConsumer.ready_states[self.room_name][self.user_id]
         except KeyError:

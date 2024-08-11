@@ -30,6 +30,7 @@ class GameView(View):
             'player1_text': game.player1_text,
             'player2_text': game.player2_text,
             'note': game.note,
+            'player_note': game.player1_note if game.player1 == request.user.username else game.player2_note,
             }
             if self.check_name_player(room_name, request.user.username):
                 return render(request, 'room.html', context)
@@ -41,6 +42,7 @@ class GameView(View):
             return redirect('lobby')
 
     def post(self, request, room_name):
+        username = request.user.username
         action = request.POST.get('action')
         game = models.GameModel.objects.filter(room_name=room_name).first()
         
@@ -48,28 +50,10 @@ class GameView(View):
             word = self.findword()
             game.word = word
             game.in_game_state = True
-
-            note = request.POST.get('rating-input')
-            if game.player1 == request.user.username and note:
-                game.player1_note = int(note)
-            elif game.player2 == request.user.username and note:
-                game.player2_note = int(note)
-
-            try:
-                note = (game.player1_note + game.player2_note) // 2
-            except TypeError:
-                note = None
-
-            if game.note:
-                print("my new friends !")
-                
-            game.note = note
-
-            print("note", note, request.user.username)
+            RateGame(username, game)
 
         elif action == "RESULTS":
             game.in_game_state = False
-            username = request.user.username
             input_text = request.POST.get('input-text')
             if game.player1 == username:
                 game.player1_text = input_text
@@ -79,7 +63,6 @@ class GameView(View):
 
         game.save()
         return redirect('room', room_name=room_name)
-
 
     def open_csv(self):
         csv_path = "dictionary/fr/noun.csv"
@@ -120,6 +103,91 @@ class GameView(View):
             return True
         return False
     
+class RateGame():
+    def __init__(self, username, game):
+        self.username = username
+        self.game = game
+
+        self.note: int = 0
+        self.player1 = User.objects.filter(username=self.game.player1).first()
+        self.player2 = User.objects.filter(username=self.game.player2).first()
+
+        self.first_rating()
+        self.local_rating()
+
+    def first_rating(self):
+        if self.game.player1 == self.username and not self.game.player1_note:
+            self.game.player1_note = 3
+        elif self.game.player2 == self.username and not self.game.player2_note:
+            self.game.player2_note = 3
+    
+    def local_rating(self):
+        if self.game.player1_note and self.game.player2_note:
+            self.note = (self.game.player1_note + self.game.player2_note) // 2
+            if self.game.note:
+                if not self.check_relationship_exists():
+                    self.create_relationship()
+                self.friend_rating()
+            self.game.note = self.note
+            print("note", self.note, self.username)
+        else:
+            return
+
+    def check_relationship_exists(self):
+        relation1 = models.FriendsModel.objects.filter(user1=self.player1, user2=self.player2)
+        relation2 = models.FriendsModel.objects.filter(user1=self.player2, user2=self.player1)
+        if relation1.exists() or relation2.exists():
+            return True
+        return False
+    
+    def create_relationship(self):
+        models.FriendsModel.objects.create(user1=self.player1, user2=self.player2)
+        models.FriendsModel.objects.create(user1=self.player2, user2=self.player1)
+
+    def friend_rating(self):
+        if self.username == self.game.player1:
+            relationship = models.FriendsModel.objects.filter(user1=self.player1, user2=self.player2).first()
+        elif self.username == self.game.player2:
+            relationship = models.FriendsModel.objects.filter(user1=self.player2, user2=self.player1).first()
+        if self.caclulate_score():
+            relationship.score += self.note
+            relationship.save()
+        print("relationship", relationship.score)
+
+    def caclulate_score(self) -> bool:
+        if not self.game.player1_text or not self.game.player2_text:
+            self.note = 3
+            return False
+        
+        elif self.game.player1_text.isspace() or self.game.player2_text.isspace():
+            self.note = 3
+            return False
+        
+        else:
+            player1_text: list[str] = self.game.player1_text.lower().split()
+            player2_text: list[str] = self.game.player2_text.lower().split()
+
+            total_bonus = 0
+            if self.note < 3:
+                bonus = 0.2
+            elif self.note < 5:
+                bonus = 0.25
+            else:
+                bonus = 0.35 
+
+            for word in player1_text:
+                if word in player2_text:
+                    total_bonus += bonus
+            
+            print("note", self.note, "BBBBBBBBBBBBBBB", total_bonus, len(player1_text))
+            self.note += total_bonus * self.note
+
+            if player1_text == player2_text:
+                self.note += len(player1_text)
+            
+            print("note", self.note, "AAAAAAAAAAAAAAAAAAAAAA", total_bonus, len(player1_text))
+            return True
+        
 class LobbyView(View):
     def get(self, request):
         error = request.session.pop('error', None)

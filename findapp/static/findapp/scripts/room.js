@@ -14,6 +14,7 @@ const chatSocket = new WebSocket(
     + '/'
 );
 
+//+++++++++++++++++++++++++++++++++++ RECEIVER +++++++++++++++++++++++++++++++++++//
 chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     console.log(data);
@@ -45,6 +46,7 @@ chatSocket.onmessage = function(e) {
     }
 };
 
+//+++++++++++++++++++++++++++++++++++ HANDLER +++++++++++++++++++++++++++++++++++//
 chatSocket.onclose = function(e) {
     if (e.code === 4000) {
         window.location.href = '/findword/lobby/';
@@ -56,17 +58,6 @@ chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
         window.reload();
     }
-};
-
-// Gestionnaire d'événement pour le bouton "Ready"
-document.querySelector('#ready-button').onclick = function(e) {
-    const button = e.target;
-    const state = button.value === 'notready' ? 'notready' : 'ready';
-    chatSocket.send(JSON.stringify({
-        'message': 'ready_state',
-        'state': state
-    }));
-    button.value = state === 'notready' ? 'ready' : 'notready';
 };
 
 // Gestionnaire d'événement beforeunload pour gérer la déconnexion propre
@@ -82,3 +73,28 @@ chatSocket.onopen = function(e) {
         'user': username
     }));
 };
+
+//+++++++++++++++++++++++++++++++++++ SENDER +++++++++++++++++++++++++++++++++++//
+// Gestionnaire d'événement pour le bouton "Ready"
+document.querySelector('#ready-button').onclick = function(e) {
+    const button = e.target;
+    const state = button.value === 'notready' ? 'notready' : 'ready';
+    chatSocket.send(JSON.stringify({
+        'message': 'ready_state',
+        'state': state
+    }));
+    button.value = state === 'notready' ? 'ready' : 'notready';
+};
+
+
+// Gestionnaire d'événement pour le changement de valeur de l'input
+document.querySelector('#rating-slider').addEventListener('input', function(e) {
+    username = document.getElementById('username').textContent;
+    const value = e.target.value;
+    console.log(value);
+    chatSocket.send(JSON.stringify({
+        'message': 'rate',
+        'note': value,
+        'user': username
+    }));
+});
