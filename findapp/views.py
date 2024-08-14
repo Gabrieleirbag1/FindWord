@@ -147,17 +147,18 @@ class RateGame():
     
     def create_relationship(self):
         models.FriendsModel.objects.create(user1=self.player1, user2=self.player2)
-        models.FriendsModel.objects.create(user1=self.player2, user2=self.player1)
 
     def friend_rating(self):
-        if self.username == self.game.player1:
+        if models.FriendsModel.objects.filter(user1=self.player1, user2=self.player2).exists():
             relationship = models.FriendsModel.objects.filter(user1=self.player1, user2=self.player2).first()
-        elif self.username == self.game.player2:
+        elif models.FriendsModel.objects.filter(user1=self.player2, user2=self.player1).exists():
             relationship = models.FriendsModel.objects.filter(user1=self.player2, user2=self.player1).first()
+        else:
+            print("Relationship does not exists")
         if self.caclulate_score():
             relationship.score += self.note
             relationship.save()
-        print("relationship", relationship.score)
+            print("relationship", relationship.score)
 
     def caclulate_score(self) -> bool:
         player1_text: list[str] = unidecode(self.game.player1_text).lower().split()
