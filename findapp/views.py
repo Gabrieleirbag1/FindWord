@@ -1,13 +1,12 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from . import models
-from . import forms
-import csv, random, os
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-import string
-import random
+from . import models
+from . import forms
+from unidecode import unidecode
+import csv, random, os, string
 
 class GameView(View):
     def __init__(self) -> None:
@@ -31,6 +30,8 @@ class GameView(View):
             'player2_text': game.player2_text,
             'note': game.note,
             'player_note': game.player1_note if game.player1 == request.user.username else game.player2_note,
+            'player_ready': game.player1_ready if game.player1 == request.user.username else game.player2_ready,
+            'score': game.score
             }
             if self.check_name_player(room_name, request.user.username):
                 return render(request, 'room.html', context)
@@ -50,7 +51,7 @@ class GameView(View):
             word = self.findword()
             game.word = word
             game.in_game_state = True
-            RateGame(username, game)
+            RateGame(username, game, word)
 
         elif action == "RESULTS":
             game.in_game_state = False
@@ -62,6 +63,7 @@ class GameView(View):
             print("input_text", input_text)
 
         game.save()
+        print("draco")
         return redirect('room', room_name=room_name)
 
     def open_csv(self):
@@ -104,31 +106,34 @@ class GameView(View):
         return False
     
 class RateGame():
-    def __init__(self, username, game):
+    def __init__(self, username, game, word):
         self.username = username
         self.game = game
+        self.word = unidecode(word).lower()
 
         self.note: int = 0
         self.player1 = User.objects.filter(username=self.game.player1).first()
         self.player2 = User.objects.filter(username=self.game.player2).first()
 
-        self.first_rating()
         self.local_rating()
+        self.first_rating()
 
     def first_rating(self):
-        if self.game.player1 == self.username and not self.game.player1_note:
+        if not self.game.player1_note or not self.game.player2_note:
             self.game.player1_note = 3
-        elif self.game.player2 == self.username and not self.game.player2_note:
             self.game.player2_note = 3
+            self.note = (self.game.player1_note + self.game.player2_note) // 2
+            self.game.note = self.note
     
     def local_rating(self):
         if self.game.player1_note and self.game.player2_note:
             self.note = (self.game.player1_note + self.game.player2_note) // 2
+            self.game.note = self.note
             if self.game.note:
                 if not self.check_relationship_exists():
                     self.create_relationship()
                 self.friend_rating()
-            self.game.note = self.note
+            self.game.score = self.note
             print("note", self.note, self.username)
         else:
             return
@@ -155,18 +160,26 @@ class RateGame():
         print("relationship", relationship.score)
 
     def caclulate_score(self) -> bool:
-        if not self.game.player1_text or not self.game.player2_text:
-            self.note = 3
+        player1_text: list[str] = unidecode(self.game.player1_text).lower().split()
+        player2_text: list[str] = unidecode(self.game.player2_text).lower().split()
+
+        if self.word in player1_text or self.word in player2_text:
+            self.note = -1
+            return False
+        
+        elif not self.game.player1_text or not self.game.player2_text:
+            self.note = -1
             return False
         
         elif self.game.player1_text.isspace() or self.game.player2_text.isspace():
-            self.note = 3
+            self.note = -1
+            return False
+        
+        elif unidecode(self.game.player1_text).lower() == self.word or unidecode(self.game.player2_text).lower() == self.word:
+            self.note = -1
             return False
         
         else:
-            player1_text: list[str] = self.game.player1_text.lower().split()
-            player2_text: list[str] = self.game.player2_text.lower().split()
-
             total_bonus = 0
             if self.note < 3:
                 bonus = 0.2
@@ -179,7 +192,6 @@ class RateGame():
                 if word in player2_text:
                     total_bonus += bonus
             
-            print("note", self.note, "BBBBBBBBBBBBBBB", total_bonus, len(player1_text))
             self.note += total_bonus * self.note
 
             if player1_text == player2_text:

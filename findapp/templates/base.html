@@ -11,13 +11,26 @@
     <header>
         <h1 id="username">{{user.username}}</h1>
         <nav>
-            <ul>
+            <div class="navbar">
+                <div class="logo">
+                    <a href="{% url 'lobby' %}">
+                        FindWord
+                    </a>
+                </div>
+              <ul class="menu">
                 <li><a href="{% url 'lobby' %}">Home</a></li>
                 <li><a href="{% url 'register' %}">Register</a></li>
+                <li><a href="#Contact">Contact</a></li>
+                <li><a href="https://missclick.net">Discover</a></li>
+                {% if not user.is_authenticated %}
                 <li><a href="{% url 'login' %}">Login</a></li>
-                <!-- Ajoutez d'autres liens ici -->
-            </ul>
+                {% else %}
+                <li><a id="logout" href="{% url 'logout' %}">Logout</a></li>
+                {% endif %}
+              </ul>
+            </div>
         </nav>
+        
     </header>
     <main>
         {% block content %}

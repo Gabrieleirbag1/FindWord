@@ -40,7 +40,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
                 await self.accept()
                 self.socket_connections.append(self)
-                await self.send_ready_state()
+                print(self.scope['user'].username, "connected to room", self.room_name)
+                await self.set_ready_states(self.scope['user'].username)
 
     async def disconnect(self, close_code):
         try:
@@ -78,10 +79,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         if message == "ready_state":
             state = await self.str_bool_convert(text_data_json['state'])
+            user = text_data_json['user']
             ChatConsumer.ready_states[self.room_name][self.user_id] = state
-            print(f"User {self.user_id} is ready")
+            await self.set_new_ready_state(user, state)
+
             if len(ChatConsumer.ready_states[self.room_name]) == 2:
                 if all(ChatConsumer.ready_states[self.room_name].values()):
+                    await self.reset_ready_states()
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -103,18 +107,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if message == "rate":
             note = text_data_json['note']
             user = text_data_json['user']            
-            # Utiliser sync_to_async pour exécuter les opérations de base de données
-            game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
-            
-            if game:
-                if game.player1 == user:
-                    game.player1_note = int(note)
-                elif game.player2 == user:
-                    game.player2_note = int(note)
-                # Sauvegarder le jeu de manière synchrone
-                await sync_to_async(game.save)()
-            return
-            
+            await self.rate(user, note)
+            return   
 
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -132,21 +126,46 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
     async def str_bool_convert(self, text_data):
-        if text_data == "notready":
+        if text_data == "ready":
             return True
         return False
-    
-    async def send_ready_state(self):
-        print(f"User {self.user_id} is ready")
-        try:
-            state = ChatConsumer.ready_states[self.room_name][self.user_id]
-        except KeyError:
-            state = False
-        await self.send(text_data=json.dumps({
-            'message': "ready_state",
-            'state': "notready" if state else "ready"
-        }))
 
     async def send_to_all(self, message):
         for connection in self.socket_connections:
             await connection.send(text_data=json.dumps(message))
+
+    async def reset_ready_states(self):
+        game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
+        if game:
+            game.player1_ready = False
+            game.player2_ready = False
+            await sync_to_async(game.save)()
+
+    async def set_ready_states(self, username):
+        game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
+        if game:
+            if username == game.player1:
+                state = game.player1_ready
+            elif username == game.player2:
+                state = game.player2_ready
+            ChatConsumer.ready_states[self.room_name][self.user_id] = state
+
+    async def set_new_ready_state(self, user, state):      
+        game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
+        if game:
+            if user == game.player1:
+                game.player1_ready = state
+            elif user == game.player2:
+                game.player2_ready = state
+            await sync_to_async(game.save)()
+
+    async def rate(self, user, note):
+        print('rating', user, 'with', note)
+        game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
+        if game:
+            if game.player1 == user:
+                game.player1_note = int(note)
+            elif game.player2 == user:
+                game.player2_note = int(note)
+            # Sauvegarder le jeu de manière synchrone
+            await sync_to_async(game.save)()

@@ -8,23 +8,43 @@
     {{ room_name|json_script:"room-name" }}
 
     <div class="infos-group">
-        <div class="player1">
-            <p> Player 1 </p>
+        <div class="player-container">
             {% if player1 %}
-            <p id="player1">{{player1}}</p>
+            <p class="player_name" id="player1">{{player1}}</p>
             {% else %}
-            <p id="player1"></p>
+            <p class="player_name" id="player1"></p>
             {% endif %}
             {% if not in_game_state%}
-            <p id="player1_text">{{player1_text}}</p>
+            <textarea class="player_text" id="player1_text" readonly style="resize: none;">{{player1_text}}</textarea>
             {% endif %}
         </div>
 
         <div class="ingame-infos-group">
             <div class="note">
-                <p> Note :</p>
                 {% if note %}
-                <p>{{ note}}</p>
+                    {% if note == 1 %}
+                    <image src="{% static 'findapp/images/crying_emoji.png' %}" class="note-image">
+                    {% elif note == 2 %}
+                    <image src="{% static 'findapp/images/sniffa_emoji.png' %}" class="note-image">
+                    {% elif note == 3 %}
+                    <image src="{% static 'findapp/images/neutral_emoji.png' %}" class="note-image">
+                    {% elif note == 4 %}
+                    <image src="{% static 'findapp/images/yum_emoji.png' %}" class="note-image">
+                    {% elif note == 5 %}
+                    <image src="{% static 'findapp/images/happy_emoji.png' %}" class="note-image">
+                    {% endif %}
+                {% else %}
+                    <image src="{% static 'findapp/images/dodo_emoji.png' %}" class="note-image">
+                {% endif %}
+            </div>
+
+            <div class="score-container">
+                {% if score%}
+                    {% if in_game_state and score != -1%}
+                        <p class="score">+ {{ score }}</p>
+                    {% else %}
+                        <p class="score"></p>
+                    {% endif %}
                 {% endif %}
             </div>
 
@@ -35,15 +55,14 @@
             </div>
         </div>
 
-        <div class="player2">
-            <p> Player 2 </p>
+        <div class="player-container">
             {% if player2 %}
-            <p id="player2">{{player2}}</p>
+            <p class="player_name" id="player2">{{player2}}</p>
             {% else %}
-            <p id="player2"></p>
+            <p class="player_name" id="player2"></p>
             {% endif %}
             {% if not in_game_state%}
-            <p id="player2_text">{{player2_text}}</p>
+            <textarea class="player_text" id="player2_text" readonly style="resize: none;">{{player2_text}}</textarea>
             {% endif %}
         </div>
     </div>
@@ -54,12 +73,15 @@
             {% if not in_game_state%}
                 <div class="text-container">
                     <input type="hidden" name="action" value="FINDWORD">
-                    <input type="text" class="text-input" disabled>
+                    <textarea class="text-input" name="input-text" disabled></textarea>
                 </div>
 
                 <div class="rating-container">
-                {% if note %}
-                    <input type="range" name="rating-input" min="1" max="5" value="{{player_note}}" class="rating-slider" id="rating-slider">
+                {% if note and player1_text and player2_text%}
+                    <input type="range" name="rating-input" min="1" max="5" value="{{player_note}}" class="rating-slider" id="rating-slider" oninput="showTooltipImage(this)">
+                    <div id="tooltip-image-container" style="position: relative;">
+                        <img id="tooltip-image" src="" alt="Tooltip Image">
+                    </div>
                 {% else %}
                     <input type="range" name="rating-input" min="1" max="5" value="3" class="rating-slider" id="rating-slider" disabled>
                 {% endif %}
@@ -67,7 +89,7 @@
             {% else %}
                 <div class="text-container">
                     <input type="hidden" name="action" value="RESULTS">
-                    <input type="text" class="text-input" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)">
+                    <textarea class="text-input" maxlength="120" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)"></textarea>
                 </div>
 
                 <div class="rating-container">
@@ -77,7 +99,11 @@
         </form>
 
         <div class="ready-container">
-            <input id="ready-button" type="button" value='notready'>
+            {% if not player_ready %}
+            <a href="" id="ready-button" class="btn btn-red btn-animate" >pas prêt</a>
+            {% else %}
+            <a href="" id="ready-button" class="btn btn-green btn-animate" >prêt</a>
+            {% endif %}
         </div>
     </div>
 
