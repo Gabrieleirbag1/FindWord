@@ -31,7 +31,7 @@ class GameView(View):
             'note': game.note,
             'player_note': game.player1_note if game.player1 == request.user.username else game.player2_note,
             'player_ready': game.player1_ready if game.player1 == request.user.username else game.player2_ready,
-            'score': game.score
+            'score': game.score * 2
             }
             if self.check_name_player(room_name, request.user.username):
                 return render(request, 'room.html', context)
@@ -133,7 +133,7 @@ class RateGame():
                 if not self.check_relationship_exists():
                     self.create_relationship()
                 self.friend_rating()
-            self.game.score = self.note
+            self.game.score = self.note / 2
             print("note", self.note, self.username)
         else:
             return

@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Lobby{% endblock %}
+{% block title %}Room{% endblock %}
 
 {% block content %}
     {{ room_name|json_script:"room-name" }}
@@ -89,7 +89,7 @@
             {% else %}
                 <div class="text-container">
                     <input type="hidden" name="action" value="RESULTS">
-                    <textarea class="text-input" maxlength="120" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)"></textarea>
+                    <textarea class="text-input" maxlength="150" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)"></textarea>
                 </div>
 
                 <div class="rating-container">

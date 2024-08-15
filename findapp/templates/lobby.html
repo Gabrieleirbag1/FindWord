@@ -3,34 +3,31 @@
 {% block title %}Lobby{% endblock %}
 
 {% block content %}
-<body>
-    <h1>Lobby</h1>
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <label for="player1"></label>
-        <button type="submit" name="action" value="CREATE">Start Game</button>
-    </form>  
-    {% if user.is_authenticated %}
-        <p>Welcome, {{ user.username }}!</p>
-        <button onclick="location.href='{% url 'logout' %}'">Logout</button>
-    {% else %}
-        <p> Login to play the game </p>
-        <button onclick="location.href='{% url 'login' %}'">Login</button>
-    {% endif %}
-    <p> Register here </p>
-    <button onclick="location.href='{% url 'register' %}'">Register</button>
-
-    <p>Join a Room</p>
-
-    <form action="" method="post">
-        {% csrf_token %}
-        <label for="room_name">Room Name:</label>
-        <input type="text" name="room_name" required><br>
-    </form>
-
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-</body>
+    <div class="lobby-container"> 
+        <div class="game-container">
+            <div class="start-button">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <label for="player1"></label>
+                    <button class="blob-btn" type="submit" name="action" value="CREATE">
+                        <span>
+                            Start Game
+                        </span>
+                        <div class="wave"></div>
+                    </button>
+                </form>
+            </div>
+                
+            <div class="form__group field">
+                <form class="form-url" method="post">
+                    {% csrf_token %}
+                    <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
+                    <label for="name" class="form__label">JOIN GAME</label>
+                </form>
+                {% if error %}
+                <p style="color: red;">{{ error }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

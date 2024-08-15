@@ -1,14 +1,45 @@
+@font-face {
+    font-family: 'Gunny Rewritten';
+    src: url('/static/findapp/fonts/gunny_rewritten/gnyrwn971.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Aquarion';
+    src: url('/static/findapp/fonts/aquarion/Aquarion.otf') format('truetype');
+}
+
 /* Group divs */
-body{
+body {
     height: 100%;
     width: 100%;
     margin: 0;
     background: linear-gradient(to right, #ffeaff, #d9f6f9);
 }
 
+body *{
+    font-family: 'Aquarion', sans-serif;
+}
+
 main {
     height: 100%;
     width: 100%;
+}
+
+.lobby-container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 60vh;
+}
+
+.game-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 30vh;
 }
 
 .infos-group {
@@ -119,7 +150,11 @@ main {
 .text-input {
     width: 100%;
     font-size: 2em;
+    border-radius: 20px;
+    padding: 1%;
     resize: none;
+    font-family: 'Gunny Rewritten', sans-serif;
+    background-image: url("/static/findapp/images/feuille.png");
 }
 
 /* Rating container */
@@ -185,6 +220,7 @@ nav{
  height: 75px;
  background: #2980b9;
  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+ z-index: 1;
 }
 nav .navbar{
  display: flex;
@@ -312,4 +348,255 @@ nav .navbar .menu{
         opacity: 1;
         transform: translateY(0px);
     }
+}
+
+/* Footer */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap");
+
+.footer {
+  position: relative;
+  width: 100%;
+  background: #3586ff;
+  min-height: 100px;
+  padding: 20px 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 20vh;
+}
+
+.social-icon,
+.menu {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.social-icon__item,
+.menu__item {
+  list-style: none;
+}
+
+.social-icon__link {
+  font-size: 2rem;
+  color: #fff;
+  margin: 0 10px;
+  display: inline-block;
+  transition: 0.5s;
+}
+.social-icon__link:hover {
+  transform: translateY(-10px);
+}
+
+.menu__link {
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 0 10px;
+  display: inline-block;
+  transition: 0.5s;
+  text-decoration: none;
+  opacity: 0.75;
+  font-weight: 300;
+}
+
+.menu__link:hover {
+  opacity: 1;
+}
+
+.footer p {
+  color: #fff;
+  margin: 15px 0 10px 0;
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.wave {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: url("https://i.ibb.co/wQZVxxk/wave.png");
+  background-size: 1000px 100px;
+}
+
+.wave#wave1 {
+  z-index: 1000;
+  opacity: 1;
+  bottom: 0;
+  animation: animateWaves 4s linear infinite;
+}
+
+.wave#wave2 {
+  z-index: 999;
+  opacity: 0.5;
+  bottom: 10px;
+  animation: animate 4s linear infinite !important;
+}
+
+.wave#wave3 {
+  z-index: 1000;
+  opacity: 0.2;
+  bottom: 15px;
+  animation: animateWaves 3s linear infinite;
+}
+
+.wave#wave4 {
+  z-index: 999;
+  opacity: 0.7;
+  bottom: 20px;
+  animation: animate 3s linear infinite;
+}
+
+@keyframes animateWaves {
+  0% {
+    background-position-x: 1000px;
+  }
+  100% {
+    background-positon-x: 0px;
+  }
+}
+
+@keyframes animate {
+  0% {
+    background-position-x: -1000px;
+  }
+  100% {
+    background-positon-x: 0px;
+  }
+}
+
+/* Start Game Button */  
+*:focus {
+outline: 0;
+}
+
+.start-button button {
+      border: 2px solid #00aeff;
+      color: #00aeff;
+      display: block;
+      font-size: calc(4vh + 4.25vh);
+      letter-spacing: 4px;
+      overflow: hidden;
+      padding: 10px 30px;
+      position: relative;
+      text-decoration: none;
+      text-transform: uppercase;
+      text-align: center;
+      border-radius: 30px;
+      cursor: pointer;
+}
+  
+.start-button button span {
+    position: relative;
+    transition: color 1s ease;
+}
+
+.start-button button:hover span,
+.start-button button:focus span,
+.start-button button:active span {
+    color: #ffffff;
+}
+
+.start-button button .wave:before {
+    animation: wave 0.5s linear infinite;
+    background-image: url('/static/findapp/images/btn-wave.png');
+    background-size: contain;
+    content: '';
+    height: 22px;
+    left: 0;
+    position: absolute;
+    top: -22px;
+    width: 100%;
+}
+
+.start-button button .wave {
+    background-color: #00aeff;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: calc(100% + 22px);
+    transition: top 1s ease;
+    width: 100%;
+}
+
+.start-button button:hover .wave,
+.start-button button:focus .wave,
+.start-button button:active .wave {
+    top: 0;
+}
+
+@keyframes wave {
+    to {
+        background-position-x: 118px;
+    }
+}
+
+/* Url Input */
+.form__group {
+    position: relative;
+    padding: 15px 0 0;
+    margin-top: 10px;
+    width: 30em;
+ }
+
+.form__field {
+    font-family: inherit;
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid #9b9b9b;
+    outline: 0;
+    font-size: 1.3rem;
+    padding: 7px 0;
+    background: transparent;
+    transition: border-color 0.2s;
+}
+
+.form__field::placeholder {
+    color: transparent;
+}
+
+.form__field:placeholder-shown ~ .form__label {
+    font-size: 1.3rem;
+    cursor: text;
+    top: 20px;
+}
+
+.form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #9b9b9b;
+}
+
+.form__field:focus {
+    padding-bottom: 6px;
+    font-weight: 700;
+    border-width: 3px;
+    border-image: linear-gradient(to right, #11998e, #38ef7d);
+    border-image-slice: 1;
+}
+
+.form__field:focus ~ .form__label {
+    position: absolute;
+    top: 0;
+    display: block;
+    transition: 0.2s;
+    font-size: 1rem;
+    color: #11998e;
+    font-weight: 700;
+}
+/* reset input */
+.form__field:required, .form__field:invalid {
+    box-shadow: none;
+}
+
+.form-url{
+    width: 100%;
 }
