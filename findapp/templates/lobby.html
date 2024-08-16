@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}Lobby{% endblock %}
+{% load static %}
+
+{% block title %}FindWord{% endblock %}
 
 {% block content %}
     <div class="lobby-container"> 
@@ -9,9 +11,9 @@
                 <form action="" method="post">
                     {% csrf_token %}
                     <label for="player1"></label>
-                    <button class="blob-btn" type="submit" name="action" value="CREATE">
+                    <button class="blob-btn box" type="submit" name="action" value="CREATE">
                         <span>
-                            Start Game
+                            Créer une partie
                         </span>
                         <div class="wave"></div>
                     </button>
@@ -22,12 +24,22 @@
                 <form class="form-url" method="post">
                     {% csrf_token %}
                     <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
-                    <label for="name" class="form__label">JOIN GAME</label>
+                    <label for="name" class="form__label">REJOINDRE UNE PARTIE</label>
                 </form>
+                <br>
                 {% if error %}
-                <p style="color: red;">{{ error }}</p>
+                    <p style="color: red;">{{ error }}</p>
                 {% endif %}
             </div>
         </div>
+        <div class="best-friend-container">
+            {% if best_friend %}
+            <p> Ton meilleur ami est <abbr>{{ best_friend }}<abbr></p><image src="{% static 'findapp/images/heart.png' %}" alt="heart" class="heart">
+            {% else %}
+            <p> Tu n'as pas encore de meilleur ami</p><image src="{% static 'findapp/images/broken-heart.png' %}" alt="heart" class="heart">
+            {% endif %}
+        </div>
+        <p><link href="https://fonts.googleapis.com/css?family=Baloo+2:400,800&display=swap" rel="stylesheet"></p>
     </div>
+
 {% endblock %}

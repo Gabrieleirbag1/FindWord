@@ -66,7 +66,7 @@ chatSocket.onmessage = function(e) {
     }
 
     if (data.message === 'username') {
-        const username = document.getElementById('username').textContent.trim();
+        const username = document.getElementById('username').value.trim();
         const player1_name = document.getElementById('player1').textContent.trim();
         const player2_name = document.getElementById('player2').textContent.trim();
         if (username !== data.user) {
@@ -101,7 +101,7 @@ window.addEventListener('beforeunload', function(event) {
 
 // when page loads send a message to the server
 chatSocket.onopen = function(e) {
-    username = document.getElementById('username').textContent;
+    username = document.getElementById('username').value;
     chatSocket.send(JSON.stringify({ 
         'message': 'connect',
         'user': username
@@ -113,7 +113,8 @@ chatSocket.onopen = function(e) {
 // Gestionnaire d'événement pour le bouton "Ready"
 document.querySelector('#ready-button').onclick = function(e) {
     e.preventDefault();
-    username = document.getElementById('username').textContent;
+    username = document.getElementById('username').value;
+    console.log(username);
     const button = e.target;
     if (button.textContent === 'prêt') {
         state = 'notready';
@@ -133,7 +134,7 @@ document.querySelector('#ready-button').onclick = function(e) {
 
 // Gestionnaire d'événement pour le changement de valeur de l'input
 document.querySelector('#rating-slider').addEventListener('input', function(e) {
-    username = document.getElementById('username').textContent;
+    username = document.getElementById('username').value;
     const value = e.target.value;
     console.log(value);
     chatSocket.send(JSON.stringify({

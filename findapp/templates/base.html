@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'findapp/images/neutral_emoji.png' %}">
-    <title>{% block title %}My Site{% endblock %}</title>
+    <title>{% block title %}FindWord{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'findapp/styles/main.css' %}">
 </head>
 <body>
     <header>
-        <h1 id="username">{{user.username}}</h1>
+        <input type="hidden" id="username" value="{{user.username}}">
         <nav>
             <div class="navbar">
                 <div class="logo">
@@ -20,13 +20,13 @@
                 </div>
               <ul class="menu">
                 <li><a href="{% url 'lobby' %}">Home</a></li>
-                <li><a href="{% url 'register' %}">Register</a></li>
-                <li><a href="#Contact">Contact</a></li>
-                <li><a href="https://missclick.net">About</a></li>
+                <li><a href="{% url 'register' %}">S'inscrire</a></li>
+                <li><a href="#Contact">Amis</a></li>
+                <li><a href="https://missclick.net">Découvrir</a></li>
                 {% if not user.is_authenticated %}
-                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'login' %}">Se connecter</a></li>
                 {% else %}
-                <li><a id="logout" href="{% url 'logout' %}">Logout</a></li>
+                <li><a id="logout" href="{% url 'logout' %}">Se déconnecter</a></li>
                 {% endif %}
               </ul>
             </div>
@@ -34,6 +34,7 @@
         
     </header>
     <main>
+      <div id="bubbles-container"></div>
         {% block content %}
         <!-- Le contenu spécifique à chaque page sera inséré ici -->
         {% endblock %}
@@ -46,29 +47,49 @@
           <div class="wave" id="wave4"></div>
         </div>
         <ul class="social-icon">
-          <li class="social-icon__item"><a class="social-icon__link" href="#">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://github.com/Gabrieleirbag1">
               <ion-icon name="logo-github"></ion-icon>
             </a></li>
-          <li class="social-icon__item"><a class="social-icon__link" href="#">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://x.com/MajecticG">
               <ion-icon name="logo-twitter"></ion-icon>
             </a></li>
-          <li class="social-icon__item"><a class="social-icon__link" href="#">
-              <ion-icon name="logo-linkedin"></ion-icon>
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.youtube.com/@missclick8355">
+              <ion-icon name="logo-youtube"></ion-icon>
             </a></li>
-          <li class="social-icon__item"><a class="social-icon__link" href="#">
+          <li class="social-icon__item"><a class="social-icon__link" href="https://www.instagram.com/zurgloxleterrible/">
               <ion-icon name="logo-instagram"></ion-icon>
             </a></li>
         </ul>
         <ul class="menu">
           <li class="menu__item"><a class="menu__link" href="{% url 'lobby' %}">Home</a></li>
-          <li class="menu__item"><a class="menu__link" href="{% url 'register' %}">Register</a></li>
-          <li class="menu__item"><a class="menu__link" href="https://missclick.net">About</a></li>
-          <li class="menu__item"><a class="menu__link" href="#Contact">Contact</a></li>
+          <li class="menu__item"><a class="menu__link" href="{% url 'register' %}">S'inscrire</a></li>
+          <li class="menu__item"><a class="menu__link" href="https://missclick.net">Découvrir</a></li>
+          <li class="menu__item"><a class="menu__link" href="#" id="open-modal">Report Bug</a></li>
     
         </ul>
-        <p>&copy;2024 Missclick | All Rights Reserved</p>
+        <p>Missclick - 2024</p>
       </footer>
+
+      {% comment %} MODAL {% endcomment %}
+      <div id="social-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Report a Bug</h2>
+            <form method="POST" class="form-modal" action="{% url 'bug_report' %}">
+                {% csrf_token %}
+                <label for="titre" class="form-label">Titre</label>
+                <input type="text" name="titre" id="titre" class="form-input" required>
+                <label for="bug" class="form-label">Description</label>
+                <textarea name="bug" id="bug" class="form-input"></textarea><br>
+                <div class="send-button-container">
+                  <button class="send-button" type="submit">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
       <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
       <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+      <script src="{% static 'findapp/scripts/base.js' %}"></script>     
 </body>
 </html>

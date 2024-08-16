@@ -11,5 +11,7 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.logout_user, name='logout'),
 
+    path('bug_report/', views.bug_report, name='bug_report'),
+
     path("room/<str:room_name>/", login_required(views.GameView.as_view(), login_url='login'), name="room"),
 ]

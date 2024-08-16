@@ -32,3 +32,15 @@ class FriendsModel(models.Model):
 
     def __unicode__(self):
         return self.__str__()
+    
+class BugModel (models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    titre = models.CharField(max_length=100)
+    bug = models.CharField(max_length=1000)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.bug}"
+
+    def __unicode__(self):
+        return self.__str__()

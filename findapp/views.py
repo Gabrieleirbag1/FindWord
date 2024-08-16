@@ -7,6 +7,7 @@ from . import models
 from . import forms
 from unidecode import unidecode
 import csv, random, os, string
+from django.db.models import Q
 
 class GameView(View):
     def __init__(self) -> None:
@@ -31,7 +32,7 @@ class GameView(View):
             'note': game.note,
             'player_note': game.player1_note if game.player1 == request.user.username else game.player2_note,
             'player_ready': game.player1_ready if game.player1 == request.user.username else game.player2_ready,
-            'score': game.score * 2
+            'score': round(game.score * 2, 3)
             }
             if self.check_name_player(room_name, request.user.username):
                 return render(request, 'room.html', context)
@@ -203,8 +204,13 @@ class RateGame():
         
 class LobbyView(View):
     def get(self, request):
+        self.get_best_friend(request)
         error = request.session.pop('error', None)
-        return render(request, 'lobby.html', {'error': error})
+        context = {
+            'error': error,
+            'best_friend': request.session.get('best_friend')
+        }
+        return render(request, 'lobby.html', context)
     
     def post(self, request):
         action = request.POST.get('action')
@@ -222,7 +228,7 @@ class LobbyView(View):
                 request.session['error'] = 'Error creating game'
                 return redirect('lobby')
         else:
-            room_name = request.POST.get('room_name')
+            room_name = request.POST.get('name')
             try:
                 room_name = room_name.split('room/')[1].strip("/")
             except IndexError:
@@ -233,6 +239,19 @@ class LobbyView(View):
             else:
                 request.session['error'] = 'Error joining room'
                 return redirect('lobby')
+            
+    def get_best_friend(self, request):
+        if request.user.is_authenticated:
+            best_friend = models.FriendsModel.objects.filter(
+                Q(user1=request.user) | Q(user2=request.user)
+            ).order_by('-score').first()
+            
+            if best_friend:
+                request.session['best_friend'] = best_friend.user1.username if best_friend.user1 != request.user else best_friend.user2.username
+            else:
+                request.session['best_friend'] = None
+        else:
+            request.session['best_friend'] = None
     
     def generate_random_url(self, length):
         characters = string.ascii_letters + string.digits + '_'
@@ -288,5 +307,20 @@ class LoginView(View):
                 return redirect('login')
             
 def logout_user(request):
-    logout(request)
+    if request.user.is_authenticated:
+        logout(request)
     return redirect('lobby')
+
+def bug_report(request):
+    if request.method == 'POST':
+        form = forms.BugForm(request.POST)
+        if form.is_valid():
+            bug = form.save(commit=False)
+            bug.user = request.user
+            bug.save()
+            referer = request.META.get('HTTP_REFERER', "/")
+            return redirect(referer)
+    else:
+        form = forms.BugForm()
+    referer = request.META.get('HTTP_REFERER', "/")
+    return redirect(referer)
