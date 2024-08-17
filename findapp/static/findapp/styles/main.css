@@ -227,6 +227,54 @@ main {
     transform: translateY(-50%); /* Ajuster pour centrer verticalement */
 }
 
+.picto-item {
+  position: absolute;  /*les .picto-item deviennent référents*/
+  cursor: help;
+  border-radius: 50%;
+  z-index: 1;
+  width: 3.2em;
+  height: 1.2em;
+  font-size: 3rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* on génère un élément :after lors du survol et du focus :*/
+
+.picto-item:hover:after,
+.picto-item:focus:after {
+  content: attr(aria-label);  /* on affiche aria-label */
+  position: absolute;
+  top: -2.4em;
+  left: 50%;
+	transform: translateX(-50%); /* on centre horizontalement  */
+  z-index: 1; /* pour s'afficher au dessus des éléments en position relative */
+  white-space: nowrap;  /* on interdit le retour à la ligne*/
+  padding: 5px 14px;
+  background: #413219;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 1.2rem;
+}
+
+/* on génère un second élément en :before pour la flèche */
+
+[aria-label]:hover:before,
+[aria-label]:focus:before {
+  content: "▼";
+  position: absolute;
+  top: -1em;
+	left: 50%;
+	transform: translateX(-50%); /* on centre horizontalement  */
+  font-size: 20px;
+  color: #413219;
+}
+
+/* pas de contour durant le :focus */
+[aria-label]:focus {
+  outline: none;
+}
+
 /*+++++++++++++++++++++++++++ Ready container +++++++++++++++++++++++++++*/
 .ready-container {
     width: 100%;
@@ -1130,17 +1178,10 @@ outline: 0;
   
   .fish {
       position: absolute;
-      left: 0px;
+      /* left: 0px;
       bottom: 75px;
-      animation: fish 40s cubic-bezier(0.9, 1, 0.3, 0.75) 0s infinite normal;
+      animation: fish 40s cubic-bezier(0.9, 1, 0.3, 0.75) 0s infinite normal; */
   }
-
-  .dark-fish {
-    position: absolute;
-    left: 0px;
-    bottom: 495px;
-    animation: fish 70s cubic-bezier(0.9, 1, 0.3, 0.75) 0s infinite normal;
-    }
   
   .blue-fish {
     left: 0;
@@ -1168,6 +1209,42 @@ outline: 0;
   
   .blue-fish .fish-body {
     background-color: #0098e0;
+  }
+
+  .red-fish .fish-body {
+    background-color: #ff0000;
+  }
+
+  .cyan-fish .fish-body {
+    background-color: #00ffff;
+  }
+
+  .green-fish .fish-body {
+    background-color: #00ff00;
+  }
+
+  .yellow-fish .fish-body {
+    background-color: #ffff00;
+  }
+
+  .purple-fish .fish-body {
+    background-color: #800080;
+  }
+
+  .pink-fish .fish-body {
+    background-color: #ff69b4;
+  }
+
+  .dark-blue-fish .fish-body {
+    background-color: #00008b;
+  }
+
+  .fuchsia-fish .fish-body {
+    background-color: #ff00ff;
+  }
+
+  .dark-green-fish .fish-body {
+    background-color: #006400;
   }
   
   .fish-body:before {
@@ -1214,6 +1291,42 @@ outline: 0;
   
   .blue-fish .top-fin {
     background-color: #0098e0;
+  }
+
+  .red-fish .top-fin {
+    background-color: #ff0000;
+  }
+
+  .cyan-fish .top-fin {
+    background-color: #00ffff;
+  }
+
+  .green-fish .top-fin {
+    background-color: #00ff00;
+  }
+
+  .yellow-fish .top-fin {
+    background-color: #ffff00;
+  }
+
+  .purple-fish .top-fin {
+    background-color: #800080;
+  }
+
+  .pink-fish .top-fin {
+    background-color: #ff69b4;
+  }
+
+  .dark-blue-fish .top-fin {
+    background-color: #00008b;
+  }
+
+  .fuchsia-fish .top-fin {
+    background-color: #ff00ff;
+  }
+
+  .dark-green-fish .top-fin {
+    background-color: #006400;
   }
   
   @keyframes tail-fin {
@@ -1263,9 +1376,45 @@ outline: 0;
       -o-transform: rotate(25deg) skewX(-18deg) skewY(-15deg);
       animation: tail-fin 1s ease 0s infinite normal;
   }
-  
+
   .blue-fish .tail-fin {
     background-color: #0098e0;
+  }
+  
+  .red-fish .tail-fin {
+    background-color: #ff0000;
+  }
+
+  .cyan-fish .tail-fin {
+    background-color: #00ffff;
+  }
+
+  .green-fish .tail-fin {
+    background-color: #00ff00;
+  }
+
+  .yellow-fish .tail-fin {
+    background-color: #ffff00;
+  }
+
+  .purple-fish .tail-fin {
+    background-color: #800080;
+  }
+
+  .pink-fish .tail-fin {
+    background-color: #ff69b4;
+  }
+
+  .dark-blue-fish .tail-fin {
+    background-color: #00008b;
+  }
+
+  .fuchsia-fish .tail-fin {
+    background-color: #ff00ff;
+  }
+
+  .dark-green-fish .tail-fin {
+    background-color: #006400;
   }
   
   .tail-fin:before {
@@ -1292,6 +1441,42 @@ outline: 0;
   
   .blue-fish .tail-fin:before {
     background-color: #0098e0;
+  }
+
+  .red-fish .tail-fin:before {
+    background-color: #ff0000;
+  }
+
+  .cyan-fish .tail-fin:before {
+    background-color: #00ffff;
+  }
+
+  .green-fish .tail-fin:before {
+    background-color: #00ff00;
+  }
+
+  .yellow-fish .tail-fin:before {
+    background-color: #ffff00;
+  }
+
+  .purple-fish .tail-fin:before {
+    background-color: #800080;
+  }
+
+  .pink-fish .tail-fin:before {
+    background-color: #ff69b4;
+  }
+
+  .dark-blue-fish .tail-fin:before {
+    background-color: #00008b;
+  }
+
+  .fuchsia-fish .tail-fin:before {
+    background-color: #ff00ff;
+  }
+
+  .dark-green-fish .tail-fin:before {
+    background-color: #006400;
   }
   
   @keyframes side-fin {
@@ -1342,6 +1527,42 @@ outline: 0;
   .blue-fish .side-fin {
     background-color: #0098e0;
   }
+
+  .red-fish .side-fin {
+    background-color: #ff0000;
+  }
+
+  .cyan-fish .side-fin {
+    background-color: #00ffff;
+  }
+
+  .green-fish .side-fin {
+    background-color: #00ff00;
+  }
+
+  .yellow-fish .side-fin {
+    background-color: #ffff00;
+  }
+
+  .purple-fish .side-fin {
+    background-color: #800080;
+  }
+
+  .pink-fish .side-fin {
+    background-color: #ff69b4;
+  }
+
+  .dark-blue-fish .side-fin {
+    background-color: #00008b;
+  }
+
+  .fuchsia-fish .side-fin {
+    background-color: #ff00ff;
+  }
+
+  .dark-green-fish .side-fin {
+    background-color: #006400;
+  }
   
   .scale {
       position: absolute;
@@ -1363,6 +1584,42 @@ outline: 0;
   
   .blue-fish .scale {
     background-color: #0098e0;
+  }
+
+  .red-fish .scale {
+    background-color: #ff0000;
+  }
+
+  .cyan-fish .scale {
+    background-color: #00ffff;
+  }
+
+  .green-fish .scale {
+    background-color: #00ff00;
+  }
+
+  .yellow-fish .scale {
+    background-color: #ffff00;
+  }
+
+  .purple-fish .scale {
+    background-color: #800080;
+  }
+
+  .pink-fish .scale {
+    background-color: #ff69b4;
+  }
+
+  .dark-blue-fish .scale {
+    background-color: #00008b;
+  }
+
+  .fuchsia-fish .scale {
+    background-color: #ff00ff;
+  }
+
+  .dark-green-fish .scale {
+    background-color: #006400;
   }
   
   .scale-1 {

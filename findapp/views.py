@@ -330,8 +330,11 @@ def bug_report(request):
     return redirect(referer)
 
 def friends(request):
+    colors = ["blue", "red", "cyan", "green", "yellow", "purple", "pink", "dark-blue", "fuchsia", "dark-green", ""]
     friends = models.FriendsModel.objects.filter(
         Q(user1=request.user) | Q(user2=request.user)
     ).order_by('-score')
+    for friend in friends:
+        friend.color = random.choice(colors)
     return render(request, 'friends.html', {'friends': friends})
 

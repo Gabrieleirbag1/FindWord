@@ -25,39 +25,22 @@
     <div id="fish-tank">
         <div id="bubble-field"></div>
         {% for friend in friends %}
-            <div class="fish">
-            <div class="top-fin"></div>
-            <div class="fish-body"></div>
-            <div class="tail-fin"></div>
-            <div class="side-fin"></div>
-            <div class="scale scale-1"></div>
-            <div class="scale scale-2"></div>
-            <div class="scale scale-3"></div>
+            <div class="fish {{friend.color}}-fish">
+                {% if friend.user1.username == user.username %}
+                    <a class="picto-item" href="#" aria-label="{{friend.user2.username}} - {{friend.score}}"></a>
+                {% else %}
+                    <a class="picto-item" href="#" aria-label="{{friend.user1.username}} - {{friend.score}}"></a>
+                {% endif %}
+                <div class="top-fin"></div>
+                <div class="fish-body"></div>
+                <div class="tail-fin"></div>
+                <div class="side-fin"></div>
+                <div class="scale scale-1"></div>
+                <div class="scale scale-2"></div>
+                <div class="scale scale-3"></div>
             </div>  
         {% endfor %}
-        <div class="fish blue-fish">
-          <div class="top-fin"></div>
-          <div class="fish-body"></div>
-          <div class="tail-fin"></div>
-          <div class="side-fin"></div>
-          <div class="scale scale-1"></div>
-          <div class="scale scale-2"></div>
-          <div class="scale scale-3"></div>
-        </div>
-        <div class="dark-fish">
-            <div class="top-fin"></div>
-            <div class="fish-body"></div>
-            <div class="tail-fin"></div>
-            <div class="side-fin"></div>
-            <div class="scale scale-1"></div>
-            <div class="scale scale-2"></div>
-            <div class="scale scale-3"></div>
-            </div>
-
-        
     </div>
-</div>
-<script src="{% static 'findapp/scripts/friends.js' %}"></script>
-
+    <script src="{% static 'findapp/scripts/friends.js' %}"></script>
 
 {% endblock %}
