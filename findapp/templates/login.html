@@ -1,23 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+{% extends 'base.html' %}
 
-    <p>Don't have an account?</p>
-    <button onclick="location.href='{% url 'register' %}'">Register</button>
-</body>
-</html>
+{% load static %}
+
+{% block title %}FindWord{% endblock %}
+
+{% block content %}
+    <div class="register" enctype="multipart/form-data">
+        <div class="register-content">
+            <h2 class="modal-title">Se connecter</h2>
+            <form method="POST" class="form-modal" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label for="username" class="form-label">Nom d'utilisateur</label>
+                <input type="text" name="username" id="username" class="form-input" oninput="filterInput(this)" required>
+
+                <label for="password" class="form-label">Mot de passe</label>
+                <input type="password" name="password" class="form-input" required>
+                
+                {% if error %}
+                <p style="color: red;">{{ error }}</p>
+                {% endif %}
+                
+                <div class="send-button-container login-container">
+                    <button class="send-button" type="submit">Se connecter</button>
+                    <button class="send-button" onclick="location.href='{% url 'register' %}'">S'inscrire</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('username').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/[^\w\s]/g, '');
+        });
+        function filterInput(input) {
+            const regex = /[^a-zA-Z0-9]/g;
+            input.value = input.value.replace(regex, '');
+        }
+    </script>
+{% endblock %}

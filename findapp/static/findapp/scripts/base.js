@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     function createBubble() {
       const bubble = document.createElement("div");
-      bubble.className = "bubble";
+      bubble.className = "bubble-background";
   
       bubble.style.left = `${Math.random() * 100}%`;
   
@@ -21,8 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   
-    // Create new bublles each 3 seconds.
-    setInterval(createBubble, 3000);
+    // Create new bublles each 2 seconds.
+    setInterval(createBubble, 2000);
   });
 
 //+++++++++++++++++++++++++++++++++++ MODAL +++++++++++++++++++++++++++++++++++//

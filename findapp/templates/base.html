@@ -21,7 +21,7 @@
               <ul class="menu">
                 <li><a href="{% url 'lobby' %}">Home</a></li>
                 <li><a href="{% url 'register' %}">S'inscrire</a></li>
-                <li><a href="#Contact">Amis</a></li>
+                <li><a href="{% url 'friends' %}">Amis</a></li>
                 <li><a href="https://missclick.net">Découvrir</a></li>
                 {% if not user.is_authenticated %}
                 <li><a href="{% url 'login' %}">Se connecter</a></li>
@@ -73,8 +73,7 @@
       {% comment %} MODAL {% endcomment %}
       <div id="social-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Report a Bug</h2>
+            <h2 class="modal-title">Report a Bug<span class="close">&times;</span></h2>
             <form method="POST" class="form-modal" action="{% url 'bug_report' %}">
                 {% csrf_token %}
                 <label for="titre" class="form-label">Titre</label>

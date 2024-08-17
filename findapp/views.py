@@ -289,8 +289,11 @@ class RegisterView(View):
     
 class LoginView(View):
     def get(self, request):
-        error = request.session.pop('error', None)
-        return render(request, 'login.html', {'error': error})
+        if request.user.is_authenticated:
+            return redirect('lobby')
+        else:
+            error = request.session.pop('error', None)
+            return render(request, 'login.html', {'error': error})
 
     def post(self, request):
         if request.method == 'POST':
@@ -301,7 +304,8 @@ class LoginView(View):
 
             if user is not None:
                 login(request, user)
-                return redirect('lobby')
+                next_url = request.GET.get('next', 'lobby')
+                return redirect(next_url)
             else:
                 request.session['error'] = 'Invalid credentials'
                 return redirect('login')
@@ -324,3 +328,10 @@ def bug_report(request):
         form = forms.BugForm()
     referer = request.META.get('HTTP_REFERER', "/")
     return redirect(referer)
+
+def friends(request):
+    friends = models.FriendsModel.objects.filter(
+        Q(user1=request.user) | Q(user2=request.user)
+    ).order_by('-score')
+    return render(request, 'friends.html', {'friends': friends})
+

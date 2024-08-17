@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}FindWord{% endblock %}
+
+{% block content %}
+
+<div class="friends-container">
+    {% comment %} <div class="friends-list">
+        <h2>Amis</h2>
+        <ul>
+            {% for friend in friends %}
+            <div class="friend">
+                {% if friend.user1.username == user.username %}
+                    <p>{{ friend.user2.username }}, {{friend.score}}</p>
+                {% else %}
+                    <p>{{ friend.user1.username }}, {{friend.score}}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </ul>
+    </div> {% endcomment %}
+
+    <div id="fish-tank">
+        <div id="bubble-field"></div>
+        {% for friend in friends %}
+            <div class="fish">
+            <div class="top-fin"></div>
+            <div class="fish-body"></div>
+            <div class="tail-fin"></div>
+            <div class="side-fin"></div>
+            <div class="scale scale-1"></div>
+            <div class="scale scale-2"></div>
+            <div class="scale scale-3"></div>
+            </div>  
+        {% endfor %}
+        <div class="fish blue-fish">
+          <div class="top-fin"></div>
+          <div class="fish-body"></div>
+          <div class="tail-fin"></div>
+          <div class="side-fin"></div>
+          <div class="scale scale-1"></div>
+          <div class="scale scale-2"></div>
+          <div class="scale scale-3"></div>
+        </div>
+        <div class="dark-fish">
+            <div class="top-fin"></div>
+            <div class="fish-body"></div>
+            <div class="tail-fin"></div>
+            <div class="side-fin"></div>
+            <div class="scale scale-1"></div>
+            <div class="scale scale-2"></div>
+            <div class="scale scale-3"></div>
+            </div>
+
+        
+    </div>
+</div>
+<script src="{% static 'findapp/scripts/friends.js' %}"></script>
+
+
+{% endblock %}
