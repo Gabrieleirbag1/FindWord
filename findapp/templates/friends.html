@@ -7,21 +7,6 @@
 {% block content %}
 
 <div class="friends-container">
-    {% comment %} <div class="friends-list">
-        <h2>Amis</h2>
-        <ul>
-            {% for friend in friends %}
-            <div class="friend">
-                {% if friend.user1.username == user.username %}
-                    <p>{{ friend.user2.username }}, {{friend.score}}</p>
-                {% else %}
-                    <p>{{ friend.user1.username }}, {{friend.score}}</p>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </ul>
-    </div> {% endcomment %}
-
     <div id="fish-tank">
         <div id="bubble-field"></div>
         {% for friend in friends %}

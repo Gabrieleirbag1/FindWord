@@ -215,13 +215,12 @@ class LobbyView(View):
     def post(self, request):
         action = request.POST.get('action')
         if action == 'CREATE':
-            player1 = None
-            player2 = None
             word = request.POST.get('word') or ''
             room_name = self.generate_random_url(10)
             while self.check_room_exists(room_name):
                 room_name = self.generate_random_url(10)
-            game = models.GameModel.objects.create(player1=player1, player2=player2, word=word, room_name=room_name)
+            game = models.GameModel.objects.create(word=word, room_name=room_name)
+            self.check_delete_game()
             if game:
                 return redirect('room', room_name=room_name)
             else:
@@ -260,6 +259,9 @@ class LobbyView(View):
     
     def check_room_exists(self, room_name):
         return models.GameModel.objects.filter(room_name=room_name).exists()
+    
+    def check_delete_game(self):
+        return
     
 class RegisterView(View):
     def get(self, request):
