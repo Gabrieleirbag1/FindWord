@@ -89,11 +89,13 @@ class GameView(View):
         if game.player1 is None:
             game.player1 = username
             game.save()
+            self.check_game_exists(game.player1, game.player2)
             return True
         elif game.player2 is None:
             if not game.player1 == username:
                 game.player2 = username
                 game.save()
+                self.check_game_exists(game.player1, game.player2)
                 return True
             else:
                 return False
@@ -105,6 +107,19 @@ class GameView(View):
         if game.player1 == username or game.player2 == username:
             return True
         return False
+    
+    def check_game_exists(self, player1, player2):
+        if player1 and player2:
+            games = [
+                game for game in models.GameModel.objects.all()
+                if (game.player1 == player1 and game.player2 == player2) or
+                (game.player1 == player2 and game.player2 == player1)
+            ]
+            
+            if len(games) > 1:
+                games.sort(key=lambda x: x.id, reverse=True)
+                for game in games[1:]:
+                    game.delete()
     
 class RateGame():
     def __init__(self, username, game, word):
@@ -157,7 +172,7 @@ class RateGame():
         else:
             print("Relationship does not exists")
         if self.caclulate_score():
-            relationship.score += self.note
+            relationship.score += self.note / 2
             relationship.save()
             print("relationship", relationship.score)
 
@@ -213,14 +228,15 @@ class LobbyView(View):
         return render(request, 'lobby.html', context)
     
     def post(self, request):
+        username = request.user.username
         action = request.POST.get('action')
         if action == 'CREATE':
             word = request.POST.get('word') or ''
             room_name = self.generate_random_url(10)
             while self.check_room_exists(room_name):
                 room_name = self.generate_random_url(10)
+            self.check_delete_game(username)
             game = models.GameModel.objects.create(word=word, room_name=room_name)
-            self.check_delete_game()
             if game:
                 return redirect('room', room_name=room_name)
             else:
@@ -260,8 +276,10 @@ class LobbyView(View):
     def check_room_exists(self, room_name):
         return models.GameModel.objects.filter(room_name=room_name).exists()
     
-    def check_delete_game(self):
-        return
+    def check_delete_game(self, username):
+        game = models.GameModel.objects.filter(Q(player1=username) | Q(player2=None))
+        if game.exists():
+            game.delete()
     
 class RegisterView(View):
     def get(self, request):

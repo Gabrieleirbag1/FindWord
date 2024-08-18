@@ -12,9 +12,9 @@
         {% for friend in friends %}
             <div class="fish {{friend.color}}-fish">
                 {% if friend.user1.username == user.username %}
-                    <a class="picto-item" href="#" aria-label="{{friend.user2.username}} - {{friend.score}}"></a>
+                    <a class="picto-item rotatable" href="#" aria-label="{{friend.user2.username}} - {{friend.score}}"></a>
                 {% else %}
-                    <a class="picto-item" href="#" aria-label="{{friend.user1.username}} - {{friend.score}}"></a>
+                    <a class="picto-item rotatable" href="#" aria-label="{{friend.user1.username}} - {{friend.score}}"></a>
                 {% endif %}
                 <div class="top-fin"></div>
                 <div class="fish-body"></div>
