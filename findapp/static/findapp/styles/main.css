@@ -1832,3 +1832,113 @@ outline: 0;
         background-position-x: 118px;
     }
 }
+
+
+/*+++++++++++++++++++++++++++ Mobile +++++++++++++++++++++++++++*/
+
+@media only screen and (max-width: 600px) {
+    /* NAVBAR */
+    nav .navbar .menu{
+      justify-content: flex-end;
+    }
+
+    nav .navbar{
+      padding-left: 3%;
+    }
+    /* FORM MODAL */
+    .modal-content {
+        width: 90%;
+    }
+
+    .register-content {
+        width: 90%;
+    }
+
+    .form-modal textarea{
+        height: 15vh;
+    }
+
+    .form-modal input{
+        font-size: 1.2em;
+    }
+
+    .form-label{
+        font-size: 1.2em;
+    }
+
+    .send-button{
+        font-size: 1.2em;
+    }
+
+    .login-container{
+      justify-content: space-between;
+    }
+
+    /* MAIN PAGE */
+
+    .start-button button{
+        font-size: 1.5em;
+    }
+
+    .form__group{
+      width: 15em;
+    }
+
+    .form__field{
+      font-size: 1.2em;
+    }
+
+    .best-friend-container{
+        padding: 0.5em;
+    }
+
+    .best-friend-container img{
+        width: 3.2em;
+    }
+
+    .best-friend-container p{
+        font-size: 1em;
+        width: 12em;
+    }
+
+    /* IN GAME */
+
+    .note-image{
+      width: 20vw;
+    }
+
+    .interaction-group,
+    .register,
+    .lobby-container {
+      margin-bottom: 25vh;
+    }
+
+    .word{
+      font-size: 1em;
+      text-align: center;
+    }
+
+    .score{
+      text-align: center;
+    }
+
+    .ingame-infos-group{
+      width: 20%;
+    }
+
+    .player-container{
+      width: 40%;
+    }
+
+    .text-container{
+      width: 85%;
+    }
+
+    .rating-slider{
+      width: 80%;
+    }
+
+    .text-container textarea{
+      font-size: 1em;
+    }
+}
