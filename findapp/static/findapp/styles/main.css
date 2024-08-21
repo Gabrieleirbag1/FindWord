@@ -247,11 +247,11 @@ main {
     -o-transform: translate(0vw); 
   }
   20% {
-    transform: translate(0vw) rotateY(180deg);
-    -webkit-transform: translate(0vw) rotateY(180deg);
-    -moz-transform: translate(0vw) rotateY(180deg);
-    -ms-transform: translate(0vw) rotateY(180deg);
-    -o-transform: translate(0vw) rotateY(180deg); 
+    transform: translate(0vw) rotateZ(22deg);
+    -webkit-transform: translate(0vw) rotateZ(22deg);
+    -moz-transform: translate(0vw) rotateZ(22deg);
+    -ms-transform: translate(0vw) rotateZ(22deg);
+    -o-transform: translate(0vw) rotateZ(22deg); 
   }
   30% {
     transform: translate(0vw);
@@ -261,11 +261,11 @@ main {
     -o-transform: translate(0vw); 
   }
   40% {
-    transform: translate(0vw) rotateY(180deg);
-    -webkit-transform: translate(0vw) rotateY(180deg);
-    -moz-transform: translate(0vw) rotateY(180deg);
-    -ms-transform: translate(0vw) rotateY(180deg);
-    -o-transform: translate(0vw) rotateY(180deg); 
+    transform: translate(0vw) rotateZ(22deg);
+    -webkit-transform: translate(0vw) rotateZ(22deg);
+    -moz-transform: translate(0vw) rotateZ(22deg);
+    -ms-transform: translate(0vw) rotateZ(22deg);
+    -o-transform: translate(0vw) rotateZ(22deg); 
   }
   50% { 
     transform: translate(0vw);
@@ -282,11 +282,11 @@ main {
     -o-transform: translate(0vw) rotateY(180deg);
   }
   60% { 
-    transform: translate(0vw) rotateY(180deg);
-    -webkit-transform: translate(0vw) rotateY(180deg);
-    -moz-transform: translate(0vw) rotateY(180deg);
-    -ms-transform: translate(0vw) rotateY(180deg);
-    -o-transform: translate(0vw) rotateY(180deg);
+    transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -webkit-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -moz-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -ms-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -o-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
   }
   70% { 
     transform: translate(0vw) rotateY(180deg);
@@ -296,11 +296,11 @@ main {
     -o-transform: translate(0vw) rotateY(180deg);
   }
   80% { 
-    transform: translate(0vw) rotateY(180deg);
-    -webkit-transform: translate(0vw) rotateY(180deg);
-    -moz-transform: translate(0vw) rotateY(180deg);
-    -ms-transform: translate(0vw) rotateY(180deg);
-    -o-transform: translate(0vw) rotateY(180deg);
+    transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -webkit-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -moz-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -ms-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -o-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
   }
   90% { 
     transform: translate(0vw) rotateY(180deg);
@@ -310,11 +310,11 @@ main {
     -o-transform: translate(0vw) rotateY(180deg);
   }
   99% { 
-    transform: translate(0vw) rotateY(180deg);
-    -webkit-transform: translate(0vw) rotateY(180deg);
-    -moz-transform: translate(0vw) rotateY(180deg);
-    -ms-transform: translate(0vw) rotateY(180deg);
-    -o-transform: translate(0vw) rotateY(180deg);
+    transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -webkit-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -moz-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -ms-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
+    -o-transform: translate(0vw) rotateY(180deg) rotateZ(22deg);
   }
   100% { 
     transform: translate(0vw);

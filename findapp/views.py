@@ -71,7 +71,7 @@ class GameView(View):
         csv_path = "dictionary/fr/noun.csv"
         full_path = os.path.join(os.path.dirname(__file__), csv_path)
         
-        with open(full_path) as f:
+        with open(full_path, encoding='utf-8') as f:
             reader = csv.reader(f)
             words = list(reader)
         return words
