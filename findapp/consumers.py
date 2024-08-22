@@ -8,7 +8,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     user_connections = {}
     ready_states = {}
     socket_connections = []
-
+    
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name

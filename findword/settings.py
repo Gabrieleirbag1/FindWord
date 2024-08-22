@@ -24,15 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ny!wbt4@%%0zse_t1xf13m0gfy+-#mkj1guw43bv6a=(!25&_u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ['https://*.missclick.net', 'https://*.findword.missclick.net','https://127.0.0.1', "http://127.0.0.1'"]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
+    # 'daphne',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,10 +49,12 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            'hosts': [('missclick.net', 6379)],
         },
     },
 }
+
+# ASGI_APPLICATION = 'finding.routing.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -84,14 +86,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'findword.wsgi.application'
 
+ASGI_APPLICATION = 'findword.routing.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'findword',
+        'USER': 'admin',
+        'PASSWORD' : '',
+        'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
@@ -137,3 +145,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SESSION_COOKIE_PATH = '/findapp'

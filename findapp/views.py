@@ -49,10 +49,11 @@ class GameView(View):
         game = models.GameModel.objects.filter(room_name=room_name).first()
         
         if action == "FINDWORD":
-            word = self.findword()
-            game.word = word
-            game.in_game_state = True
-            RateGame(username, game, word)
+            if not game.in_game_state:
+                word = self.findword()
+                game.word = word
+                game.in_game_state = True
+                RateGame(username, game, word)
 
         elif action == "RESULTS":
             game.in_game_state = False
@@ -64,14 +65,13 @@ class GameView(View):
             print("input_text", input_text)
 
         game.save()
-        print("draco")
         return redirect('room', room_name=room_name)
 
     def open_csv(self):
         csv_path = "dictionary/fr/noun.csv"
         full_path = os.path.join(os.path.dirname(__file__), csv_path)
         
-        with open(full_path) as f:
+        with open(full_path, encoding='utf-8') as f:
             reader = csv.reader(f)
             words = list(reader)
         return words
@@ -357,4 +357,3 @@ def friends(request):
     for friend in friends:
         friend.color = random.choice(colors)
     return render(request, 'friends.html', {'friends': friends})
-
