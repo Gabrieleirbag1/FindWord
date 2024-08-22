@@ -1906,16 +1906,14 @@ outline: 0;
     .note-image{
       width: 20vw;
     }
-
-    .interaction-group,
-    .register,
-    .lobby-container {
-      margin-bottom: 25vh;
-    }
-
+    
     .word{
       font-size: 1em;
       text-align: center;
+    }
+
+    .player_name{
+      font-size: 1em;
     }
 
     .score{

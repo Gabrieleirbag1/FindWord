@@ -49,10 +49,11 @@ class GameView(View):
         game = models.GameModel.objects.filter(room_name=room_name).first()
         
         if action == "FINDWORD":
-            word = self.findword()
-            game.word = word
-            game.in_game_state = True
-            RateGame(username, game, word)
+            if not game.in_game_state:
+                word = self.findword()
+                game.word = word
+                game.in_game_state = True
+                RateGame(username, game, word)
 
         elif action == "RESULTS":
             game.in_game_state = False
@@ -64,7 +65,6 @@ class GameView(View):
             print("input_text", input_text)
 
         game.save()
-        print("draco")
         return redirect('room', room_name=room_name)
 
     def open_csv(self):

@@ -28,13 +28,6 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('username').addEventListener('input', function (e) {
-            e.target.value = e.target.value.replace(/[^\w\s]/g, '');
-        });
-        function filterInput(input) {
-            const regex = /[^a-zA-Z0-9]/g;
-            input.value = input.value.replace(regex, '');
-        }
-    </script>
+    <script src="{% static 'findapp/scripts/logs.js' %}"></script>
+
 {% endblock %}
