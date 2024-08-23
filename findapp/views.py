@@ -68,7 +68,7 @@ class GameView(View):
         return redirect('room', room_name=room_name)
 
     def open_csv(self):
-        csv_path = "dictionary/fr/noun.csv"
+        csv_path = "dictionary/fr/words.csv"
         full_path = os.path.join(os.path.dirname(__file__), csv_path)
         
         with open(full_path, encoding='utf-8') as f:
