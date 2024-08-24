@@ -57,12 +57,6 @@ class GameView(View):
 
         elif action == "RESULTS":
             game.in_game_state = False
-            input_text = request.POST.get('input-text')
-            if game.player1 == username:
-                game.player1_text = input_text
-            else:
-                game.player2_text = input_text
-            print("input_text", input_text)
 
         game.save()
         return redirect('room', room_name=room_name)

@@ -80,6 +80,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if message == "ready_state":
             state = await self.str_bool_convert(text_data_json['state'])
             user = text_data_json['user']
+            input_text = text_data_json['input_text']
+            await self.update_player_text(input_text)
             ChatConsumer.ready_states[self.room_name][self.user_id] = state
             await self.set_new_ready_state(user, state)
 
@@ -169,3 +171,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 game.player2_note = int(note)
             # Sauvegarder le jeu de manière synchrone
             await sync_to_async(game.save)()
+
+    async def update_player_text(self, input_text):
+        game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
+        username = self.scope['user'].username
+        print('updating text for', username)
+        if game.player1 == username:
+            game.player1_text = input_text
+        else:
+            game.player2_text = input_text
+        await sync_to_async(game.save)()
+

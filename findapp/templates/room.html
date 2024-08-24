@@ -79,7 +79,7 @@
             {% if not in_game_state%}
                 <div class="text-container">
                     <input type="hidden" name="action" value="FINDWORD">
-                    <textarea class="text-input" name="input-text" disabled></textarea>
+                    <textarea id="input-text" class="text-input" name="input-text" disabled></textarea>
                 </div>
 
                 <div class="rating-container">
@@ -95,7 +95,7 @@
             {% else %}
                 <div class="text-container">
                     <input type="hidden" name="action" value="RESULTS">
-                    <textarea class="text-input" maxlength="100" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)"></textarea>
+                    <textarea id="input-text" class="text-input" maxlength="100" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)"></textarea>
                 </div>
 
                 <div class="rating-container">

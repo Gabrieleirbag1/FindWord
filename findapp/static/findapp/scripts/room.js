@@ -114,6 +114,7 @@ chatSocket.onopen = function(e) {
 document.querySelector('#ready-button').onclick = function(e) {
     e.preventDefault();
     username = document.getElementById('username').value;
+    input_text = document.getElementById('input-text').value;
     console.log(username);
     const button = e.target;
     if (button.textContent === 'prêt') {
@@ -128,7 +129,8 @@ document.querySelector('#ready-button').onclick = function(e) {
     chatSocket.send(JSON.stringify({
         'message': 'ready_state',
         'state': state,
-        'user': username
+        'user': username,
+        'input_text': input_text
     }));
 };
 
