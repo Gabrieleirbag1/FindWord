@@ -10,13 +10,15 @@
     <div class="infos-group">
         <div class="player-container">
             {% if player1 %}
-            <p class="player_name" id="player1">{{player1}}</p>
+            <p class="player_name" id="player1">
+                <span class="fancy">{{player1}}</span>
+            </p>
             {% else %}
             <p class="player_name" id="player1"></p>
             {% endif %}
 
             {% if note and not in_game_state%}
-            <div class="thought">
+            <div class="player-text-bubble">
                 <textarea class="player_text" id="player1_text" readonly style="resize: none;">{{player1_text}}</textarea>
             </div>
             {% endif %}
@@ -60,13 +62,15 @@
 
         <div class="player-container">
             {% if player2 %}
-            <p class="player_name" id="player2">{{player2}}</p>
+            <p class="player_name" id="player2">
+            <span class="fancy">{{player2}}</span>
+            </p>
             {% else %}
             <p class="player_name" id="player2"></p>
             {% endif %}
 
             {% if note and not in_game_state%}
-            <div class="thought">
+            <div class="player-text-bubble">
                 <textarea class="player_text" id="player2_text" readonly style="resize: none;">{{player2_text}}</textarea>
             </div>
             {% endif %}
@@ -78,8 +82,8 @@
             {% csrf_token %}
             {% if not in_game_state%}
                 <div class="text-container">
-                    <input type="hidden" name="action" value="FINDWORD">
-                    <textarea class="text-input" name="input-text" disabled></textarea>
+                    <input id="action" type="hidden" name="action" value="FINDWORD">
+                    <textarea id="input-text" class="text-input" name="input-text" disabled></textarea>
                 </div>
 
                 <div class="rating-container">
@@ -94,8 +98,12 @@
                 </div>
             {% else %}
                 <div class="text-container">
-                    <input type="hidden" name="action" value="RESULTS">
-                    <textarea class="text-input" maxlength="100" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)"></textarea>
+                    <input id="action" type="hidden" name="action" value="RESULTS">
+                    {% if player_ready %}
+                        <textarea id="input-text" class="text-input" maxlength="100" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)" disabled>{{player_text}}</textarea>
+                    {% else %}
+                        <textarea id="input-text" class="text-input" maxlength="100" name="input-text" onkeydown="return event.key != 'Enter';" oninput="filterInput(this)">{{player_text}}</textarea>
+                    {% endif %}
                 </div>
 
                 <div class="rating-container">

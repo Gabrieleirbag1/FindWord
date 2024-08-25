@@ -92,7 +92,6 @@ chatSocket.onclose = function(e) {
         window.alert('You are already in the room. Redirecting to lobby...');
     } else {
         console.error('Chat socket closed unexpectedly');
-        window.reload();
     }
 };
 
@@ -116,21 +115,29 @@ chatSocket.onopen = function(e) {
 document.querySelector('#ready-button').onclick = function(e) {
     e.preventDefault();
     username = document.getElementById('username').value;
-    console.log(username);
+    input_text = document.getElementById('input-text').value;
+    input_action = document.getElementById('action').value;
     const button = e.target;
     if (button.textContent === 'prêt') {
         state = 'notready';
         button.classList.replace('btn-green', 'btn-red');
         button.textContent = 'pas prêt';
+        if (input_action === 'RESULTS') {
+            document.getElementById('input-text').disabled = false;
+        }
     } else {
         state = 'ready';
         button.classList.replace('btn-red', 'btn-green');
         button.textContent = 'prêt';
+        if (input_action === 'RESULTS') {
+            document.getElementById('input-text').disabled = true;
+        }
     }
     chatSocket.send(JSON.stringify({
         'message': 'ready_state',
         'state': state,
-        'user': username
+        'user': username,
+        'input_text': input_text
     }));
 };
 

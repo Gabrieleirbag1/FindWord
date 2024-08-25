@@ -30,6 +30,7 @@ class GameView(View):
             'player1_text': game.player1_text,
             'player2_text': game.player2_text,
             'note': game.note,
+            'player_text': game.player1_text if game.player1 == request.user.username else game.player2_text,
             'player_note': game.player1_note if game.player1 == request.user.username else game.player2_note,
             'player_ready': game.player1_ready if game.player1 == request.user.username else game.player2_ready,
             'score': round(game.score * 2, 3)
@@ -57,12 +58,6 @@ class GameView(View):
 
         elif action == "RESULTS":
             game.in_game_state = False
-            input_text = request.POST.get('input-text')
-            if game.player1 == username:
-                game.player1_text = input_text
-            else:
-                game.player2_text = input_text
-            print("input_text", input_text)
 
         game.save()
         return redirect('room', room_name=room_name)
@@ -133,6 +128,7 @@ class RateGame():
 
         self.local_rating()
         self.first_rating()
+        self.reset_player_text()
 
     def first_rating(self):
         if not self.game.player1_note or not self.game.player2_note:
@@ -180,6 +176,8 @@ class RateGame():
         player1_text: list[str] = unidecode(self.game.player1_text).lower().split()
         player2_text: list[str] = unidecode(self.game.player2_text).lower().split()
 
+        print("player1_text", player1_text, "player2_text", player2_text)
+
         if self.word in player1_text or self.word in player2_text:
             self.note = -1
             return False
@@ -216,6 +214,10 @@ class RateGame():
             
             print("note", self.note, "AAAAAAAAAAAAAAAAAAAAAA", total_bonus, len(player1_text))
             return True
+            
+    def reset_player_text(self):
+        self.game.player1_text = ""
+        self.game.player2_text = ""
         
 class LobbyView(View):
     def get(self, request):
@@ -357,3 +359,4 @@ def friends(request):
     for friend in friends:
         friend.color = random.choice(colors)
     return render(request, 'friends.html', {'friends': friends})
+
