@@ -69,13 +69,13 @@ chatSocket.onmessage = function(e) {
 
     if (data.message === 'username') {
         const username = document.getElementById('username').value.trim();
-        const player1_name = document.getElementById('player1').textContent.trim();
-        const player2_name = document.getElementById('player2').textContent.trim();
+        const player1_name = document.getElementById('player1-span').textContent.trim();
+        const player2_name = document.getElementById('player2-span').textContent.trim();
         if (username !== data.user) {
             if (player1_name === '') {
-                document.getElementById('player1').textContent = data.user;
+                document.getElementById('player1-span').textContent = data.user;
             } else if (player2_name === '') {
-                document.getElementById('player2').textContent = data.user;
+                document.getElementById('player2-span').textContent = data.user;
             }
         }
     }
