@@ -176,9 +176,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         game = await sync_to_async(GameModel.objects.filter(room_name=self.room_name).first)()
         username = self.scope['user'].username
         print('updating text for', username)
-        if game.player1 == username:
-            game.player1_text = input_text
-        else:
-            game.player2_text = input_text
-        await sync_to_async(game.save)()
+        if game.in_game_state:
+            if game.player1 == username:
+                game.player1_text = input_text
+            else:
+                game.player2_text = input_text
+            await sync_to_async(game.save)()
 
