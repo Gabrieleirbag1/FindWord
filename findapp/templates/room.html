@@ -11,10 +11,12 @@
         <div class="player-container">
             {% if player1 %}
             <p class="player_name" id="player1">
-                <span class="fancy">{{player1}}</span>
+                <span id="player1-span" class="fancy">{{player1}}</span>
             </p>
             {% else %}
-            <p class="player_name" id="player1"></p>
+            <p class="player_name" id="player1">
+                <span id="player1-span" class="fancy"></span>
+            </p>
             {% endif %}
 
             {% if note and not in_game_state%}
@@ -63,10 +65,12 @@
         <div class="player-container">
             {% if player2 %}
             <p class="player_name" id="player2">
-            <span class="fancy">{{player2}}</span>
+                <span id="player2-span" class="fancy">{{player2}}</span>
             </p>
             {% else %}
-            <p class="player_name" id="player2"></p>
+            <p class="player_name" id="player2">
+                <span id="player2-span" class="fancy"></span>
+            </p>
             {% endif %}
 
             {% if note and not in_game_state%}
